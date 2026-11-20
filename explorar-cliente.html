@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Explorar Servicios — Cuidado de Mascotas</title>
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Contenedor para el navbar dinámico (Ari) -->
+  <header id="navbarContainer"></header>
+
+  <!-- Encabezado -->
+  <section class="brand-banner py-4 mb-4">
+    <div class="container d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+      <div class="d-flex align-items-center gap-3">
+        <img
+          src="imagenes/huellitas.png"
+          alt="Logo Cuidado de Mascotas"
+          class="brand-logo"
+        />
+        <div>
+          <h1 class="font-brand display-6 mb-1">Explorar servicios</h1>
+          <p class="mb-0 text-secondary">
+            Encontrá paseadores, veterinarios a domicilio y cuidadores de confianza para tu mascota.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main class="container pb-5">
+    <!-- Cards de los filtros-->
+    <section class="card filter-card shadow-sm mb-4" aria-label="Filtros de búsqueda">
+      <div class="card-body p-4">
+        <h2 class="font-brand h4 mb-3">Filtrar búsqueda</h2>
+
+        <form id="filtrosForm" class="row g-3 align-items-end">
+          <!-- Categoría -->
+          <div class="col-12 col-sm-6 col-lg-2">
+            <label for="filtroCategoria" class="form-label fw-semibold">Categoría</label>
+            <select id="filtroCategoria" name="categoria" class="form-select">
+              <option value="">Todas</option>
+              <option value="paseo">Paseo</option>
+              <option value="veterinaria">Veterinaria a domicilio</option>
+              <option value="guarderia">Guardería / Cuidado</option>
+            </select>
+          </div>
+
+          <!-- Precio máximo -->
+          <div class="col-12 col-sm-6 col-lg-2">
+            <label for="filtroPrecioMax" class="form-label fw-semibold">Precio máx. ($)</label>
+            <input
+              type="number"
+              id="filtroPrecioMax"
+              name="precioMax"
+              class="form-control"
+              min="0"
+              step="100"
+              placeholder="Ej: 15000"
+            />
+          </div>
+
+          <!-- Estrellas mínimas -->
+          <div class="col-12 col-sm-6 col-lg-2">
+            <label for="filtroEstrellasMin" class="form-label fw-semibold">Estrellas mín.</label>
+            <select id="filtroEstrellasMin" name="estrellasMin" class="form-select">
+              <option value="">Cualquiera</option>
+              <option value="1">1+ estrellas</option>
+              <option value="2">2+ estrellas</option>
+              <option value="3">3+ estrellas</option>
+              <option value="4">4+ estrellas</option>
+              <option value="4.5">4.5+ estrellas</option>
+            </select>
+          </div>
+
+          <!-- Zona -->
+          <div class="col-12 col-sm-6 col-lg-3">
+            <label for="filtroZona" class="form-label fw-semibold">Zona</label>
+            <input
+              type="text"
+              id="filtroZona"
+              name="zona"
+              class="form-control"
+              placeholder="Ej: Centro, Parque..."
+            />
+          </div>
+
+          <!-- Disponibilidad semanal -->
+          <div class="col-12 col-sm-6 col-lg-3">
+            <label for="filtroDisponibilidad" class="form-label fw-semibold">Disponibilidad</label>
+            <input
+              type="text"
+              id="filtroDisponibilidad"
+              name="disponibilidad"
+              class="form-control"
+              placeholder="Ej: Lunes, Tarde..."
+            />
+          </div>
+
+          <!-- Acciones de filtros -->
+          <div class="col-12 d-flex flex-wrap gap-2 justify-content-end pt-2">
+            <button type="button" id="btnLimpiarFiltros" class="btn btn-pet-outline">
+              Limpiar filtros
+            </button>
+            <button type="submit" id="btnAplicarFiltros" class="btn btn-pet-primary">
+              Aplicar filtros
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+  </main>
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
+  <script src="../js/config.js" defer></script>
+  <script src="../js/auth-guard.js" defer></script>
+  <script src="../js/buscador-cliente.js" defer></script>
+</body>
+</html>
