@@ -12,20 +12,38 @@
 <body>
   <main class="container-fluid min-vh-100 p-0">
     <div class="row g-0 min-vh-100">
-    <section class="col-lg-5 d-flex flex-column p-4 p-md-5 bg-warning-subtle auth-intro" aria-labelledby="brand-title">
-      <a class="d-block mb-3" href="./index.html" aria-label="Huellitas, inicio">
+    <section class="col-12 col-lg-5 d-flex flex-column justify-content-lg-between p-4 p-md-5 bg-warning-subtle position-relative overflow-hidden auth-intro" aria-labelledby="brand-title">
+      <div class="auth-pet-pattern position-absolute top-0 start-0 w-100 h-100 overflow-hidden z-1 lh-1" aria-hidden="true">
+        <span>🐾</span>
+        <span>🐾</span>
+        <span>🐾</span>
+        <span>🐾</span>
+        <span>🐾</span>
+        <span>🦴</span>
+        <span>🐶</span>
+        <span>🐾</span>
+        <span>🐱</span>
+        <span>🦴</span>
+        <span>🐾</span>
+        <span>🐾</span>
+        <span>🐶</span>
+        <span>🐾</span>
+        <span>🐱</span>
+        <span>🦴</span>
+      </div>
+      <a class="d-block mb-3 position-relative z-2" href="./index.html" aria-label="Huellitas, inicio">
         <img class="rounded-circle border border-4 border-white shadow-sm object-fit-cover"
           src="./imagenes/logo.jpeg" alt="Huellitas" width="112" height="112">
       </a>
-      <div class="auth-intro-copy">
+      <div class="auth-intro-copy position-relative z-2">
         <p class="text-warning-emphasis text-uppercase fw-bold small">Cuidado cerca tuyo</p>
-        <h1 class="display-4 fw-bold text-body-emphasis" id="brand-title">El bienestar de tu mascota, en buenas manos.</h1>
+        <h1 class="display-4 fw-bold text-warning-emphasis" id="brand-title">El bienestar de tu mascota, en buenas manos.</h1>
         <p class="lead text-body-secondary">Encontrá profesionales de confianza para paseos, cuidados y atención veterinaria.</p>
       </div>
-      <p class="d-none d-lg-block text-body-secondary mt-auto mb-0">Una comunidad que cuida con amor.</p>
+      <p class="d-none d-lg-block text-body-secondary mt-4 mb-0 position-relative z-2">Una comunidad que cuida con amor.</p>
     </section>
 
-    <section class="col-lg-7 d-flex flex-column align-items-center justify-content-center p-3 p-md-5 auth-main" aria-label="Acceso a Huellitas">
+    <section class="col-12 col-lg-7 d-flex flex-column align-items-center justify-content-center p-3 p-md-4 p-xl-5 auth-main" aria-label="Acceso a Huellitas">
       <div class="card border-0 shadow-lg rounded-4 w-100 auth-card">
         <div class="card-body p-4 p-md-5">
           <div class="nav nav-pills nav-fill bg-body-tertiary p-1 rounded-3 mb-4 auth-tabs" role="tablist" aria-label="Acceso o registro">
@@ -36,7 +54,7 @@
           </div>
 
           <section class="auth-panel" id="login-panel" role="tabpanel" aria-labelledby="login-tab">
-          <h2 class="h3 fw-bold">¡Qué bueno verte!</h2>
+          <h2 class="h3 fw-bold text-warning-emphasis">¡Qué bueno verte!</h2>
           <p class="text-secondary mb-4">Ingresá a tu cuenta para continuar.</p>
           <form id="login-form" novalidate>
             <div class="mb-3">
