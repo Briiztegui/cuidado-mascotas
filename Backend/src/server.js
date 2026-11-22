@@ -3,6 +3,8 @@ import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 import bcrypt from "bcryptjs";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
 import Usuario from "./modelos/cliente.js";
 import Profesional from "./modelos/oferente.js";
@@ -18,6 +20,7 @@ app.use(cors());
 
 const PORT = process.env.PORT || 3000;
 const MONGODB_URI = process.env.MONGODB_URI;
+const frontendPath = resolve(dirname(fileURLToPath(import.meta.url)), "../../Frontend");
 
 // ==========================================
 // 1. CONEXIÓN A MONGODB
@@ -262,6 +265,8 @@ app.get("/api/estadisticas/profesional/:id", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+app.use(express.static(frontendPath));
 
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
