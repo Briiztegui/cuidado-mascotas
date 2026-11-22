@@ -1,0 +1,54 @@
+:root {
+  --bs-primary: #ec802b;
+  --bs-primary-rgb: 236, 128, 43;
+  --bs-info: #68bcb4;
+  --bs-info-rgb: 104, 188, 180;
+  --bs-warning: #edc55b;
+  --bs-warning-rgb: 237, 197, 91;
+  --bs-warning-bg-subtle: #fff6e4;
+  --bs-warning-text-emphasis: #5c3112;
+  --bs-body-color: #392a1f;
+  --bs-body-bg: #fffaf2;
+  --bs-border-color: #eadbca;
+  --bs-link-color: #358e87;
+  --bs-link-hover-color: #25756f;
+}
+
+.auth-intro {
+  min-height: 100vh;
+}
+
+.auth-card {
+  max-width: 490px;
+}
+
+.auth-tabs {
+  --bs-nav-link-color: var(--bs-body-color);
+  --bs-nav-link-hover-color: var(--bs-body-color);
+  --bs-nav-pills-link-active-bg: var(--bs-info);
+  --bs-nav-pills-link-active-color: var(--bs-body-color);
+}
+
+.form-check-input:checked {
+  background-color: var(--bs-info);
+  border-color: var(--bs-info);
+}
+
+.btn-primary {
+  --bs-btn-bg: var(--bs-primary);
+  --bs-btn-border-color: var(--bs-primary);
+  --bs-btn-hover-bg: #d96f1e;
+  --bs-btn-hover-border-color: #d96f1e;
+  --bs-btn-active-bg: #c76118;
+  --bs-btn-active-border-color: #c76118;
+}
+
+.auth-message {
+  min-height: 1.25em;
+}
+
+@media (max-width: 991.98px) {
+  .auth-intro {
+    min-height: auto;
+  }
+}
