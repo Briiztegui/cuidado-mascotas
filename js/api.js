@@ -79,7 +79,9 @@ export const solicitudesAPI = {
     peticionApi(`/solicitudes/${id}/estado`, {
       method: "PUT",
       body: JSON.stringify({ estado })
-    })
+    }),
+  listarPorCliente: (id) =>
+    peticionApi(`/solicitudes/cliente/${id}`)
 };
 
 export const resenasAPI = {
@@ -87,10 +89,14 @@ export const resenasAPI = {
     peticionApi("/resenas", {
       method: "POST",
       body: JSON.stringify(payload)
-    })
+    }),
+  listarPorProfesional: (id) =>
+    peticionApi(`/resenas/profesional/${id}`)
 };
 
 export const estadisticasAPI = {
   profesional: (id) =>
+    peticionApi(`/estadisticas/profesional/${id}`),
+  obtenerPorProfesional: (id) =>
     peticionApi(`/estadisticas/profesional/${id}`)
 };

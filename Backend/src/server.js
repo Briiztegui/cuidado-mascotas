@@ -183,6 +183,16 @@ app.get("/api/solicitudes/profesional/:id", async (req, res) => {
   }
 });
 
+app.get("/api/solicitudes/cliente/:id", async (req, res) => {
+  try {
+    const solicitudes = await Solicitud.find({ cliente: req.params.id })
+      .populate("profesional", "zona contacto")
+      .populate("servicio", "nombre precio categoria");
+    res.json(solicitudes);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 app.put("/api/solicitudes/:id/estado", async (req, res) => {
   try {
     const { estado } = req.body;
@@ -209,9 +219,9 @@ app.post("/api/resenas", async (req, res) => {
       });
     }
 
-    const resenaExistente = await Resena.findOne({ solicitud });
+    const resenaExistente = await Resena.findOne({ cliente, profesional });
     if (resenaExistente) {
-      return res.status(400).json({ mensaje: "Ya existe una reseña para esta solicitud." });
+      return res.status(400).json({ mensaje: "Ya dejaste una reseña para este profesional." });
     }
 
     const nuevaResena = new Resena({ solicitud, profesional, cliente, puntaje, comentario });
