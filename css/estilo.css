@@ -3,3 +3,186 @@
   - Complemento a Bootstrap 5.
   - IMPORTANTE: Usar prefijos por módulo para no pisar clases (ej: .auth-, .of-, .cl-, .sol-).
 */
+/* =========================================================
+   ESTILOS GENERALES Y PALETA DE COLORES - HUELLITAS
+   ========================================================= */
+:root {
+  --color-crema: #E8CCAD;
+  --color-naranja: #EC802B;
+  --color-naranja-hover: #d46d1d;
+  --color-amarillo: #EDC55B;
+  --color-turquesa: #66BCB4;
+  --color-turquesa-oscuro: #4da39b;
+  --color-fondo: #FAF6F1;
+  --color-texto: #2B2623;
+  --fuente-titulos: 'Fredoka', sans-serif;
+  --fuente-principal: 'Nunito', sans-serif;
+}
+
+body {
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
+  font-family: var(--fuente-principal);
+}
+
+h1, h2, h3, h4, .navbar-brand, .titulo-huellitas {
+  font-family: var(--fuente-titulos);
+  color: var(--color-texto);
+}
+
+/* Navbar superior */
+.navbar-huellitas {
+  background-color: #ffffff;
+  border-bottom: 2px solid var(--color-crema);
+}
+
+.logo-navbar {
+  height: 46px;
+  width: auto;
+  object-fit: contain;
+}
+
+.brand-texto {
+  color: var(--color-naranja) !important;
+  font-weight: 700;
+  font-size: 1.4rem;
+  letter-spacing: 0.3px;
+}
+
+/* Tarjeta principal del perfil */
+.card-huellitas {
+  background-color: #ffffff;
+  border: 2px solid var(--color-crema);
+  border-radius: 1.5rem;
+}
+
+.badge-turquesa {
+  background-color: var(--color-turquesa);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+/* Avatar / Foto del oferente */
+.avatar-oferente-box {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background-color: var(--color-fondo);
+  border: 3px solid var(--color-crema);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.3rem;
+  color: var(--color-naranja);
+  margin: 0 auto;
+}
+
+/* Inputs */
+.input-huellitas {
+  background-color: #ffffff;
+  border: 1.5px solid var(--color-crema);
+  border-radius: 0.85rem;
+  padding: 0.65rem 0.95rem;
+  color: var(--color-texto);
+}
+
+.input-huellitas:focus {
+  border-color: var(--color-turquesa);
+  box-shadow: 0 0 0 0.22rem rgba(102, 188, 180, 0.25);
+}
+
+/* Aviso de privacidad WhatsApp */
+.aviso-privacidad-wa {
+  background-color: rgba(237, 197, 91, 0.24);
+  border-left: 4px solid var(--color-amarillo);
+  border-radius: 0.6rem;
+  padding: 0.55rem 0.85rem;
+  font-size: 0.85rem;
+  color: var(--color-texto);
+}
+
+/* Contenedor de disponibilidad semanal */
+.caja-disponibilidad {
+  background-color: var(--color-fondo);
+  border: 1.5px solid var(--color-crema);
+  border-radius: 1.15rem;
+}
+
+.fila-dia {
+  background-color: #ffffff;
+  border: 1px solid rgba(232, 204, 173, 0.65);
+  border-radius: 0.85rem;
+  padding: 0.55rem 0.85rem;
+}
+
+.nombre-dia {
+  font-weight: 700;
+  color: var(--color-texto);
+  font-size: 0.95rem;
+}
+
+/* Pastillas de turnos (Mañana / Tarde / Noche) */
+.btn-franja {
+  border: 1.5px solid var(--color-crema);
+  background-color: #ffffff;
+  color: var(--color-texto);
+  font-weight: 700;
+  font-size: 0.82rem;
+  border-radius: 50rem;
+  padding: 0.35rem 0.85rem;
+  transition: all 0.18s ease-in-out;
+}
+
+.btn-franja:hover {
+  border-color: var(--color-turquesa);
+  background-color: rgba(102, 188, 180, 0.12);
+  color: var(--color-texto);
+}
+
+.btn-check:checked + .btn-franja {
+  background-color: var(--color-turquesa);
+  border-color: var(--color-turquesa-oscuro);
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(102, 188, 180, 0.35);
+}
+
+/* Botones principales */
+.btn-naranja-huellitas {
+  background-color: var(--color-naranja);
+  border: none;
+  color: #ffffff;
+  font-family: var(--fuente-titulos);
+  font-weight: 600;
+  font-size: 1.05rem;
+  letter-spacing: 0.4px;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn-naranja-huellitas:hover,
+.btn-naranja-huellitas:focus {
+  background-color: var(--color-naranja-hover);
+  color: #ffffff;
+}
+
+.btn-turquesa-outline {
+  border: 1.5px solid var(--color-turquesa);
+  color: var(--color-turquesa-oscuro);
+  font-weight: 700;
+}
+
+.btn-turquesa-outline:hover {
+  background-color: var(--color-turquesa);
+  color: #ffffff;
+}
+
+.link-volver-panel {
+  color: var(--color-texto);
+  font-weight: 700;
+  font-size: 0.92rem;
+  text-decoration: underline;
+}
+
+.link-volver-panel:hover {
+  color: var(--color-naranja);
+}
