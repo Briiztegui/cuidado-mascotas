@@ -56,3 +56,37 @@
     color: var(--color-turquesa-oscuro);
     font-weight: 700;
   }
+  .estrellas {
+    display: inline-flex;
+    flex-direction: row-reverse;
+    gap: 4px;
+  }
+  
+  .estrellas input {
+    display: none;
+  }
+  
+  .estrellas label {
+    font-size: 2.5rem;
+    color: var(--color-crema);
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+  
+  .estrellas label:hover,
+  .estrellas label:hover ~ label,
+  .estrellas input:checked ~ label {
+    color: var(--color-amarillo);
+  }
+  body {
+    max-width: 500px;
+    margin: 40px auto;
+  }
+  
+  .estrellas, textarea, button {
+    display: block;
+  }
+  
+  .estrellas {
+    display: inline-flex;
+  }

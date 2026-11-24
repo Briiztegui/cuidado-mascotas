@@ -8,25 +8,29 @@
     <link rel="stylesheet" href="../css/resenas.css">
 </head>
 <body>
-    <h1>Dejá tu reseña</h1>
-    <div id="estrellas">
-        <label><input type="radio" name="puntaje" value="1"> 1 ⭐</label>
-        <label><input type="radio" name="puntaje" value="2"> 2 ⭐</label>
-        <label><input type="radio" name="puntaje" value="3"> 3 ⭐</label>
-        <label><input type="radio" name="puntaje" value="4"> 4 ⭐</label>
-        <label><input type="radio" name="puntaje" value="5"> 5 ⭐</label>
-      </div>
+   
+        <div class="tarjeta">
+          <h1>Dejá tu reseña</h1>
+      
+          <div class="estrellas">
+            <input type="radio" name="puntaje" id="e5" value="5"><label for="e5">★</label>
+            <input type="radio" name="puntaje" id="e4" value="4"><label for="e4">★</label>
+            <input type="radio" name="puntaje" id="e3" value="3"><label for="e3">★</label>
+            <input type="radio" name="puntaje" id="e2" value="2"><label for="e2">★</label>
+            <input type="radio" name="puntaje" id="e1" value="1"><label for="e1">★</label>
+          </div>
+      
+          <textarea id="comentario" placeholder="Contanos tu experiencia"></textarea>
+          <button id="btnEnviar">Enviar</button>
+          <p id="mensaje"></p>
+        </div>
+      
+    <script type="module" src="../js/resenas-stats.js"></script>
+ </body>
 
-      <textarea id="comentario" placeholder="Contanos tu experiencia"></textarea>
-
-    <button id="btnEnviar">Enviar</button>
-
-    <p id="mensaje"></p>
 
 
 
 
-
-    <script type="module" src="../js/resenas-stats.js"></script>   
-</body>
+    
 </html>
