@@ -36,9 +36,12 @@ h1, h2, h3, h4, .navbar-brand, .titulo-huellitas {
   border-bottom: 2px solid var(--color-crema);
 }
 
-.logo-navbar {
+.logo-navbar,
+.navbar-logo {
   height: 46px;
+  max-height: 46px;
   width: auto;
+  max-width: 140px;
   object-fit: contain;
 }
 

@@ -1,7 +1,7 @@
 <!-- 
   VISTA OFERENTE: Onboarding y Edición de Perfil (Integrante 3 - Brisa)
   - Formulario para configurar zona, número de WhatsApp y disponibilidad horaria semanal.
-  - Importa bootstrap, js/auth-guard.js y js/perfil-oferente.js (type="module").
+  - Importa Bootstrap, js/auth-guard.js y js/perfil-oferente.js (type="module").
 -->
 
 <!DOCTYPE html>
@@ -16,25 +16,8 @@
     <link rel="stylesheet" href="../css/estilo.css">
   </head>
   <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-huellitas shadow-sm sticky-top">
-      <div class="container">
-        <a class="navbar-brand d-flex align-items-center gap-2 brand-texto" href="../index.html">
-          <img src="../imagenes/logo.jpeg" alt="Logo Huellitas" class="logo-navbar" onerror="this.style.display='none'">
-          <span>Huellitas</span>
-        </a>
-
-        <div class="ms-auto d-flex align-items-center gap-2">
-          <span id="nombre-oferente-nav" class="fw-bold small d-none d-md-inline me-1"></span>
-          <a href="panel-oferente.html" class="btn btn-sm btn-turquesa-outline rounded-pill px-3">
-            Mi Panel
-          </a>
-          <button type="button" id="btn-cerrar-sesion" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
-            Salir
-          </button>
-        </div>
-      </div>
-    </nav>
+    <!-- Contenedor opcional donde auth-guard.js insertará el navbar unificado -->
+    <div id="navbarContainer"></div>
 
     <!-- Contenedor principal -->
     <main class="container py-4 py-md-5">
@@ -48,7 +31,7 @@
 
           <!-- Tarjeta principal -->
           <div class="card card-huellitas shadow-sm p-4 p-md-5">
-            <!-- Encabezado interno-->
+            <!-- Encabezado interno -->
             <div class="row align-items-center g-3 mb-4 pb-3 border-bottom" style="border-color: var(--color-crema) !important;">
               <div class="col-12 col-sm-auto text-center">
                 <div class="avatar-oferente-box">
@@ -105,7 +88,7 @@
                 </div>
               </div>
 
-              <!--Disponibilidad Horaria Semanal -->
+              <!-- Disponibilidad Horaria Semanal -->
               <div class="mb-4">
                 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
                   <label class="form-label fw-bold mb-0 fs-5 titulo-huellitas">
@@ -238,7 +221,8 @@
 
     <!-- Bootstrap 5 JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Lógica del módulo -->
+    <!-- Guard y navbar unificado de tu compañera + lógica de perfil -->
+    <script type="module" src="../js/auth-guard.js"></script>
     <script type="module" src="../js/perfil-oferente.js"></script>
   </body>
 </html>

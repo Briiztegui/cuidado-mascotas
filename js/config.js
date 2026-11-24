@@ -10,5 +10,6 @@ export const CONFIG = {
 };
 
 export const STORAGE_KEYS = {
-  USUARIO: "cuidado_mascotas_usuario"
+  USUARIO: "cuidado_mascotas_usuario",
+  TOKEN: "cuidado_mascotas_token"
 };
