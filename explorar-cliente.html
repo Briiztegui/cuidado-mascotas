@@ -115,12 +115,48 @@
         </form>
       </div>
     </section>
+  <!-- Resumen de resultados-->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+      <span id="contadorResultados" class="text-muted small fw-medium">
+        Mostrando resultados disponibles
+      </span>
+    </div>
 
+    <!-- Estado: Cargando -->
+     <div id="estadoCarga" class="text-center py-5 d-none" role="status">
+      <div class="spinner-border mb-2" style="color: var(--color-naranja);" aria-hidden="true"></div>
+      <p class="text-muted mb-0">Buscando profesionales y servicios disponibles...</p>
+    </div> 
+
+    <!-- Estado: Error -->
+    <div id="estadoError" class="alert alert-danger d-none" role="alert">
+      No se pudo cargar el catálogo en este momento. Verificá la conexión con el servidor e intentá nuevamente.
+    </div> 
+
+    <!-- Estado: Sin resultados -->
+     <div id="estadoVacio" class="card filter-card text-center py-5 d-none">
+      <div class="card-body">
+        <h2 class="font-brand h4 mb-2">No encontramos coincidencias</h2>
+        <p class="text-muted mb-3">
+          Probá ampliar el precio máximo, bajar las estrellas mínimas o limpiar los filtros.
+        </p>
+        <button type="button" id="btnLimpiarDesdeVacio" class="btn btn-pet-primary">
+          Restablecer filtros
+        </button>
+      </div>
+    </div> 
+
+    <!-- Grilla de tarjetas -->
+    <section
+      id="grillaResultados"
+      class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4"
+      aria-label="Resultados de servicios y profesionales"
+    ></section> 
   </main>
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
   <script src="../js/config.js" defer></script>
   <script src="../js/auth-guard.js" defer></script>
-  <script src="../js/buscador-cliente.js" defer></script>
+  <script src="JS/buscador-cliente.js" defer></script>
 </body>
 </html>
