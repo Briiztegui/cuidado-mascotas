@@ -105,10 +105,24 @@ h1, h2, h3, h4 {
 }
 
 .navbar-logo {
-  width: 60px;
-  height: 60px;
+  width: 100px;
+  height: 100px;
   object-fit: cover;
   border-radius: 50%;
   border: 2px solid var(--color-amarillo);
   background-color: var(--color-crema);
+}
+
+/* =================================
+   SERVICIOS DEL OFERENTE
+================================= */
+
+#serviciosActivos .card {
+    background-color: #ffffff;
+    border: 1px solid rgba(232, 204, 173, 0.8);
+    border-radius: 1rem;
+}
+
+#serviciosActivos h3 {
+    color: var(--color-turquesa-oscuro);
 }
