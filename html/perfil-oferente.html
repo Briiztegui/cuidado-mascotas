@@ -1,5 +1,226 @@
 <!-- 
   VISTA OFERENTE: Onboarding y Edición de Perfil (Integrante 3 - Brisa)
   - Formulario para configurar zona, número de WhatsApp y disponibilidad horaria semanal.
-  - Importa bootstrap, js/auth-guard.js y js/perfil-oferente.js (type="module").
+  - Importa Bootstrap, js/auth-guard.js y js/perfil-oferente.js (type="module").
 -->
+
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurá tu Perfil Profesional | Huellitas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/estilo.css">
+  </head>
+  <body>
+    <!-- Contenedor opcional donde auth-guard.js insertará el navbar unificado -->
+    <div id="navbarContainer"></div>
+
+    <!-- Contenedor principal -->
+    <main class="container py-4 py-md-5">
+      <div class="row justify-content-center">
+        <div class="col-12 col-lg-9 col-xl-8">
+
+          <div class="text-center mb-4">
+            <h1 class="fw-bold text-uppercase mb-1">Configurá tu Perfil Profesional</h1>
+            <p class="text-muted mb-0">Completá tus datos para que los dueños de mascotas puedan encontrarte y reservarte.</p>
+          </div>
+
+          <!-- Tarjeta principal -->
+          <div class="card card-huellitas shadow-sm p-4 p-md-5">
+            <!-- Encabezado interno -->
+            <div class="row align-items-center g-3 mb-4 pb-3 border-bottom" style="border-color: var(--color-crema) !important;">
+              <div class="col-12 col-sm-auto text-center">
+                <div class="avatar-oferente-box">
+                  <i class="bi bi-heart-pulse-fill"></i>
+                </div>
+              </div>
+              <div class="col-12 col-sm text-center text-sm-start">
+                <span class="badge badge-turquesa rounded-pill px-3 py-2 mb-2">
+                  Rol: Oferente / Profesional
+                </span>
+                <h3 id="titulo-bienvenida-oferente" class="fw-bold mb-1">¡Ayudá a los clientes a encontrarte!</h3>
+                <p class="text-muted small mb-0">
+                  Definí tu zona de cobertura, tu WhatsApp y los días y franjas horarias en los que trabajás.
+                </p>
+              </div>
+            </div>
+
+            <!-- Alertas de validación y guardado -->
+            <div id="alerta-perfil" class="alert d-none rounded-3" role="alert"></div>
+
+            <!-- Formulario -->
+            <form id="form-perfil" novalidate>
+
+              <!-- Zona y WhatsApp -->
+              <div class="row g-3 mb-4">
+                <div class="col-12 col-md-6">
+                  <label for="zona" class="form-label fw-bold">
+                    <i class="bi bi-geo-alt-fill text-danger me-1"></i>Zona de Cobertura
+                  </label>
+                  <input
+                    type="text"
+                    class="form-control input-huellitas"
+                    id="zona"
+                    placeholder="Ej: Fray Luis Beltrán, San Lorenzo, Rosario"
+                    required
+                  >
+                  <div class="form-text">Ciudad o barrios donde brindás atención.</div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <label for="contacto" class="form-label fw-bold">
+                    <i class="bi bi-whatsapp text-success me-1"></i>Teléfono de WhatsApp
+                  </label>
+                  <input
+                    type="tel"
+                    class="form-control input-huellitas"
+                    id="contacto"
+                    placeholder="Ej: +54 9 341 555 1234"
+                    required
+                  >
+                  <div class="aviso-privacidad-wa mt-2">
+                    <i class="bi bi-lock-fill me-1"></i><strong>Privado:</strong> solo visible para el cliente cuando aceptes su solicitud.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Disponibilidad Horaria Semanal -->
+              <div class="mb-4">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+                  <label class="form-label fw-bold mb-0 fs-5 titulo-huellitas">
+                    Tu Disponibilidad Horaria Semanal
+                  </label>
+                  <button type="button" id="btn-seleccionar-todo" class="btn btn-sm btn-turquesa-outline rounded-pill px-3">Seleccionar / Quitar Todo</button>
+                </div>
+
+                <div class="caja-disponibilidad p-3">
+                  <div class="d-flex flex-column gap-2" id="contenedor-disponibilidad">
+
+                    <div class="fila-dia d-flex flex-wrap align-items-center justify-content-between gap-2">
+                      <span class="nombre-dia">Lunes</span>
+                      <div class="d-flex flex-wrap gap-2">
+                        <input type="checkbox" class="btn-check disp-check" id="lun-m" value="Lunes - Mañana" autocomplete="off">
+                        <label class="btn btn-franja" for="lun-m">Mañana</label>
+
+                        <input type="checkbox" class="btn-check disp-check" id="lun-t" value="Lunes - Tarde" autocomplete="off">
+                        <label class="btn btn-franja" for="lun-t">Tarde</label>
+
+                        <input type="checkbox" class="btn-check disp-check" id="lun-n" value="Lunes - Noche" autocomplete="off">
+                        <label class="btn btn-franja" for="lun-n">Noche</label>
+                      </div>
+                    </div>
+
+                    <div class="fila-dia d-flex flex-wrap align-items-center justify-content-between gap-2">
+                      <span class="nombre-dia">Martes</span>
+                      <div class="d-flex flex-wrap gap-2">
+                        <input type="checkbox" class="btn-check disp-check" id="mar-m" value="Martes - Mañana" autocomplete="off">
+                        <label class="btn btn-franja" for="mar-m">Mañana</label>
+
+                        <input type="checkbox" class="btn-check disp-check" id="mar-t" value="Martes - Tarde" autocomplete="off">
+                        <label class="btn btn-franja" for="mar-t">Tarde</label>
+
+                        <input type="checkbox" class="btn-check disp-check" id="mar-n" value="Martes - Noche" autocomplete="off">
+                        <label class="btn btn-franja" for="mar-n">Noche</label>
+                      </div>
+                    </div>
+
+                    <div class="fila-dia d-flex flex-wrap align-items-center justify-content-between gap-2">
+                      <span class="nombre-dia">Miércoles</span>
+                      <div class="d-flex flex-wrap gap-2">
+                        <input type="checkbox" class="btn-check disp-check" id="mie-m" value="Miércoles - Mañana" autocomplete="off">
+                        <label class="btn btn-franja" for="mie-m">Mañana</label>
+
+                        <input type="checkbox" class="btn-check disp-check" id="mie-t" value="Miércoles - Tarde" autocomplete="off">
+                        <label class="btn btn-franja" for="mie-t">Tarde</label>
+
+                        <input type="checkbox" class="btn-check disp-check" id="mie-n" value="Miércoles - Noche" autocomplete="off">
+                        <label class="btn btn-franja" for="mie-n">Noche</label>
+                      </div>
+                    </div>
+
+                    <div class="fila-dia d-flex flex-wrap align-items-center justify-content-between gap-2">
+                      <span class="nombre-dia">Jueves</span>
+                      <div class="d-flex flex-wrap gap-2">
+                        <input type="checkbox" class="btn-check disp-check" id="jue-m" value="Jueves - Mañana" autocomplete="off">
+                        <label class="btn btn-franja" for="jue-m">Mañana</label>
+
+                        <input type="checkbox" class="btn-check disp-check" id="jue-t" value="Jueves - Tarde" autocomplete="off">
+                        <label class="btn btn-franja" for="jue-t">Tarde</label>
+
+                        <input type="checkbox" class="btn-check disp-check" id="jue-n" value="Jueves - Noche" autocomplete="off">
+                        <label class="btn btn-franja" for="jue-n">Noche</label>
+                      </div>
+                    </div>
+
+                    <div class="fila-dia d-flex flex-wrap align-items-center justify-content-between gap-2">
+                      <span class="nombre-dia">Viernes</span>
+                      <div class="d-flex flex-wrap gap-2">
+                        <input type="checkbox" class="btn-check disp-check" id="vie-m" value="Viernes - Mañana" autocomplete="off">
+                        <label class="btn btn-franja" for="vie-m">Mañana</label>
+
+                        <input type="checkbox" class="btn-check disp-check" id="vie-t" value="Viernes - Tarde" autocomplete="off">
+                        <label class="btn btn-franja" for="vie-t">Tarde</label>
+
+                        <input type="checkbox" class="btn-check disp-check" id="vie-n" value="Viernes - Noche" autocomplete="off">
+                        <label class="btn btn-franja" for="vie-n">Noche</label>
+                      </div>
+                    </div>
+
+                    <div class="fila-dia d-flex flex-wrap align-items-center justify-content-between gap-2">
+                      <span class="nombre-dia">Sábado</span>
+                      <div class="d-flex flex-wrap gap-2">
+                        <input type="checkbox" class="btn-check disp-check" id="sab-m" value="Sábado - Mañana" autocomplete="off">
+                        <label class="btn btn-franja" for="sab-m">Mañana</label>
+
+                        <input type="checkbox" class="btn-check disp-check" id="sab-t" value="Sábado - Tarde" autocomplete="off">
+                        <label class="btn btn-franja" for="sab-t">Tarde</label>
+
+                        <input type="checkbox" class="btn-check disp-check" id="sab-n" value="Sábado - Noche" autocomplete="off">
+                        <label class="btn btn-franja" for="sab-n">Noche</label>
+                      </div>
+                    </div>
+
+                    <div class="fila-dia d-flex flex-wrap align-items-center justify-content-between gap-2">
+                      <span class="nombre-dia">Domingo</span>
+                      <div class="d-flex flex-wrap gap-2">
+                        <input type="checkbox" class="btn-check disp-check" id="dom-m" value="Domingo - Mañana" autocomplete="off">
+                        <label class="btn btn-franja" for="dom-m">Mañana</label>
+
+                        <input type="checkbox" class="btn-check disp-check" id="dom-t" value="Domingo - Tarde" autocomplete="off">
+                        <label class="btn btn-franja" for="dom-t">Tarde</label>
+
+                        <input type="checkbox" class="btn-check disp-check" id="dom-n" value="Domingo - Noche" autocomplete="off">
+                        <label class="btn btn-franja" for="dom-n">Noche</label>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+
+              <!-- Botón principal -->
+              <div class="d-grid gap-2 text-center">
+                <button type="submit" id="btn-guardar-perfil" class="btn btn-naranja-huellitas btn-lg rounded-pill py-3 shadow-sm">
+                  GUARDAR Y ACTIVAR PERFIL
+                </button>
+                <a href="panel-oferente.html" class="link-volver-panel mt-2">
+                  Volver al panel más tarde
+                </a>
+              </div>
+
+            </form>
+          </div>
+
+        </div>
+      </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="../js/perfil-oferente.js"></script>
+  </body>
+
+</html>

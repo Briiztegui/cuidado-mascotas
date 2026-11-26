@@ -4,3 +4,134 @@
   - Formularios de Login y Registro con selección de rol ('oferente' o 'cliente', no modificable después).
   - Conecta con js/auth.js.
 -->
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#fff6e4">
+    <title>Huellitas | Cuidado de mascotas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./css/auth.css">
+    <script type="module" src="./js/auth.js"></script>
+  </head>
+  <body>
+    <main class="container-fluid min-vh-100 p-0">
+      <div class="row g-0 min-vh-100">
+      <section class="col-12 col-lg-5 d-flex flex-column justify-content-lg-between p-4 p-md-5 bg-warning-subtle position-relative overflow-hidden auth-intro" aria-labelledby="brand-title">
+        <div class="auth-pet-pattern position-absolute top-0 start-0 w-100 h-100 overflow-hidden z-1 lh-1" aria-hidden="true">
+          <span>🐾</span>
+          <span>🐾</span>
+          <span>🐾</span>
+          <span>🐾</span>
+          <span>🐾</span>
+          <span>🦴</span>
+          <span>🐶</span>
+          <span>🐾</span>
+          <span>🐱</span>
+          <span>🦴</span>
+          <span>🐾</span>
+          <span>🐾</span>
+          <span>🐶</span>
+          <span>🐾</span>
+          <span>🐱</span>
+          <span>🦴</span>
+        </div>
+        <a class="d-block mb-3 position-relative z-2" href="./index.html" aria-label="Huellitas, inicio">
+          <img class="rounded-circle border border-4 border-white shadow-sm object-fit-cover"
+            src="./imagenes/logo.jpeg" alt="Huellitas" width="112" height="112">
+        </a>
+        <div class="auth-intro-copy position-relative z-2">
+          <p class="text-warning-emphasis text-uppercase fw-bold small">Cuidado cerca tuyo</p>
+          <h1 class="display-4 fw-bold text-warning-emphasis" id="brand-title">El bienestar de tu mascota, en buenas manos.</h1>
+          <p class="lead text-body-secondary">Encontrá profesionales de confianza para paseos, cuidados y atención veterinaria.</p>
+        </div>
+        <p class="d-none d-lg-block text-body-secondary mt-4 mb-0 position-relative z-2">Una comunidad que cuida con amor.</p>
+      </section>
+
+      <section class="col-12 col-lg-7 d-flex flex-column align-items-center justify-content-center p-3 p-md-4 p-xl-5 auth-main" aria-label="Acceso a Huellitas">
+        <div class="card border-0 shadow-lg rounded-4 w-100 auth-card">
+          <div class="card-body p-4 p-md-5">
+            <div class="nav nav-pills nav-fill bg-body-tertiary p-1 rounded-3 mb-4 auth-tabs" role="tablist" aria-label="Acceso o registro">
+              <button class="nav-link active" id="login-tab" type="button" role="tab"
+                aria-selected="true" aria-controls="login-panel" data-auth-tab="login">Iniciar sesión</button>
+              <button class="nav-link" id="register-tab" type="button" role="tab"
+                aria-selected="false" aria-controls="register-panel" data-auth-tab="register">Crear cuenta</button>
+            </div>
+
+            <section class="auth-panel" id="login-panel" role="tabpanel" aria-labelledby="login-tab">
+            <h2 class="h3 fw-bold text-warning-emphasis">¡Qué bueno verte!</h2>
+            <p class="text-secondary mb-4">Ingresá a tu cuenta para continuar.</p>
+            <form id="login-form" novalidate>
+              <div class="mb-3">
+                <label class="form-label" for="login-email">Correo electrónico</label>
+                <input class="form-control" id="login-email" name="email" type="email" autocomplete="email"
+                  placeholder="nombre@correo.com" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label" for="login-password">Contraseña</label>
+                <input class="form-control" id="login-password" name="password" type="password"
+                  autocomplete="current-password" placeholder="Tu contraseña" required>
+              </div>
+              <button class="btn btn-primary w-100 py-2 fw-semibold" type="submit">Iniciar sesión</button>
+              <p class="auth-message small mt-3 mb-0" id="login-message" role="status" aria-live="polite"></p>
+            </form>
+            <p class="text-secondary text-center small mt-4 mb-0">¿Todavía no tenés cuenta?
+              <button class="btn btn-link p-0 fw-semibold auth-inline-button" type="button" data-auth-tab="register">Registrate</button>
+            </p>
+            </section>
+
+            <section class="auth-panel" id="register-panel" role="tabpanel"
+              aria-labelledby="register-tab" hidden>
+            <h2 class="h3 fw-bold">Sumate a Huellitas</h2>
+            <p class="text-secondary mb-4">Creá una cuenta para empezar.</p>
+            <form id="register-form" novalidate>
+              <div class="mb-3">
+                <label class="form-label" for="register-name">Nombre y apellido</label>
+                <input class="form-control" id="register-name" name="nombre" type="text" autocomplete="name"
+                  placeholder="Tu nombre" maxlength="80" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label" for="register-email">Correo electrónico</label>
+                <input class="form-control" id="register-email" name="email" type="email" autocomplete="email"
+                  placeholder="nombre@correo.com" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label" for="register-password">Contraseña</label>
+                <input class="form-control" id="register-password" name="password" type="password"
+                  autocomplete="new-password" minlength="8" placeholder="Mínimo 8 caracteres" required>
+              </div>
+              <fieldset class="mb-2">
+                <legend class="form-label fw-semibold">Quiero registrarme como</legend>
+                <div class="form-check border rounded-3 p-3 mb-2">
+                  <input class="form-check-input" type="radio" name="rol" id="rol-cliente" value="cliente" checked>
+                  <label class="form-check-label" for="rol-cliente">
+                    🐾 <strong>Cliente</strong>
+                    <small class="d-block text-secondary">Busco servicios para mi mascota</small>
+                  </label>
+                </div>
+                <div class="form-check border rounded-3 p-3 mb-2">
+                  <input class="form-check-input" type="radio" name="rol" id="rol-oferente" value="oferente">
+                  <label class="form-check-label" for="rol-oferente">
+                    ✦ <strong>Oferente</strong>
+                    <small class="d-block text-secondary">Ofrezco servicios para mascotas</small>
+                  </label>
+                </div>
+              </fieldset>
+              <p class="small text-secondary mb-3">El rol elegido queda asociado a tu cuenta y no se puede cambiar.</p>
+              <button class="btn btn-primary w-100 py-2 fw-semibold" type="submit">Crear cuenta</button>
+              <p class="auth-message small mt-3 mb-0" id="register-message" role="status" aria-live="polite"></p>
+            </form>
+            <p class="text-secondary text-center small mt-4 mb-0">¿Ya tenés cuenta?
+              <button class="btn btn-link p-0 fw-semibold auth-inline-button" type="button" data-auth-tab="login">Iniciá sesión</button>
+            </p>
+            </section>
+          </div>
+        </div>
+        <p class="small text-secondary text-center mt-3 mb-0 auth-legal">Al continuar, tus datos se usarán para gestionar tu cuenta en Huellitas.</p>
+      </section>
+      </div>
+    </main>
+  </body>
+</html>
