@@ -141,7 +141,7 @@ async function cargarPanelEstadisticasYResenas() {
       resenasAPI.listarPorProfesional(profesionalId)
     ]);
 
-    document.getElementById("statServicios").textContent = stats.cantidadServicios ?? stats.servicios ?? 0;
+    document.getElementById("statServicios").textContent = stats.totalServicios ?? stats.cantidadServicios ?? stats.servicios ?? 0;
 
     const promedio = Number(stats.calificacionPromedio ?? stats.promedio ?? 0);
     document.getElementById("statPromedio").textContent = `${promedio.toFixed(1)} ★`;
