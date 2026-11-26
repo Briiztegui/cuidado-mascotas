@@ -1,0 +1,26 @@
+.grilla-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+  }
+  
+  .stat {
+    background: var(--color-fondo);
+    border: 2px solid var(--color-crema);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+  }
+  
+  .stat span {
+    display: block;
+    font-family: var(--fuente-titulos);
+    font-size: 2rem;
+    color: var(--color-naranja);
+  }
+  
+  .stat p {
+    margin: 4px 0 0;
+    font-size: 0.9rem;
+  }
