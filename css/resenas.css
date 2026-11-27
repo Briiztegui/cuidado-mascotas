@@ -1,92 +1,68 @@
-:root {
-    --color-crema: #E8CCAD;
-    --color-naranja: #EC802B;
-    --color-naranja-hover: #d46d1d;
-    --color-amarillo: #EDC55B;
-    --color-turquesa: #66BCB4;
-    --color-turquesa-oscuro: #4da39b;
-    --color-fondo: #FAF6F1;
-    --color-texto: #2B2623;
-    --fuente-titulos: 'Fredoka', sans-serif;
-    --fuente-principal: 'Nunito', sans-serif;
-  }
-  body {
-    background-color: var(--color-fondo);
-    color: var(--color-texto);
-    font-family: var(--fuente-principal);
-    padding: 24px;
-  }
-  
-  h1 {
-    font-family: var(--fuente-titulos);
-    color: var(--color-naranja);
-  }
-  
-  textarea {
-    width: 100%;
-    min-height: 100px;
-    margin: 12px 0;
-    padding: 10px;
-    border: 2px solid var(--color-crema);
-    border-radius: 10px;
-    font-family: var(--fuente-principal);
-  }
-  
-  textarea:focus {
-    outline: none;
-    border-color: var(--color-turquesa);
-  }
-  
-  button {
-    background-color: var(--color-naranja);
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 10px;
-    font-family: var(--fuente-titulos);
-    cursor: pointer;
-  }
-  
-  button:hover {
-    background-color: var(--color-naranja-hover);
-  }
-  
-  #mensaje {
-    margin-top: 12px;
-    color: var(--color-turquesa-oscuro);
-    font-weight: 700;
-  }
-  .estrellas {
-    display: inline-flex;
-    flex-direction: row-reverse;
-    gap: 4px;
-  }
-  
-  .estrellas input {
-    display: none;
-  }
-  
-  .estrellas label {
-    font-size: 2.5rem;
-    color: var(--color-crema);
-    cursor: pointer;
-    transition: color 0.2s;
-  }
-  
-  .estrellas label:hover,
-  .estrellas label:hover ~ label,
-  .estrellas input:checked ~ label {
-    color: var(--color-amarillo);
-  }
-  body {
-    max-width: 500px;
-    margin: 40px auto;
-  }
-  
-  .estrellas, textarea, button {
-    display: block;
-  }
-  
-  .estrellas {
-    display: inline-flex;
-  }
+/* colores del grupo: crema #E8CCAD, naranja #EC802B, amarillo #EDC55B, turquesa #66BCB4 */
+
+body {
+  background-color: #FAF6F1;
+  color: #2B2623;
+  font-family: 'Nunito', sans-serif;
+}
+
+/* titulos y numeros en naranja */
+.titulo, .stat-numero {
+  font-family: 'Fredoka', sans-serif;
+  color: #EC802B;
+}
+
+.stat-numero {
+  font-size: 2rem;
+}
+
+/* bordes crema porque Bootstrap los trae grises */
+.card, .form-control {
+  border: 2px solid #E8CCAD;
+}
+
+.form-control:focus {
+  border-color: #66BCB4;
+  box-shadow: none;
+}
+
+/* boton naranja */
+.btn-mascotas {
+  background-color: #EC802B;
+  border-color: #EC802B;
+  color: white;
+  font-family: 'Fredoka', sans-serif;
+}
+
+.btn-mascotas:hover {
+  background-color: #d46d1d;
+  border-color: #d46d1d;
+  color: white;
+}
+
+#mensaje {
+  color: #4da39b;
+}
+
+/* estrellas: Bootstrap no tiene, van de 5 a 1 en el html y aca las doy vuelta */
+.estrellas {
+  display: inline-flex;
+  flex-direction: row-reverse;
+}
+
+.estrellas input {
+  position: absolute;
+  opacity: 0;
+}
+
+.estrellas label {
+  font-size: 2.5rem;
+  color: #E8CCAD;
+  cursor: pointer;
+}
+
+.estrellas label:hover,
+.estrellas label:hover ~ label,
+.estrellas input:checked ~ label {
+  color: #EDC55B;
+}
