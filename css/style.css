@@ -21,35 +21,6 @@ h1, h2, h3, h4 {
   font-family: var(--fuente-titulos);
 }
 
-/* Navbar dinámico con la paleta del proyecto */
-#navbar.navbar {
-  font-family: var(--fuente-principal);
-  box-shadow: 0 2px 10px rgba(43, 38, 35, 0.08);
-}
-
-#navbar.bg-primary {
-  background-color: var(--color-turquesa-oscuro) !important;
-}
-
-#navbar.bg-success {
-  background-color: var(--color-naranja) !important;
-}
-
-#navbar .navbar-brand {
-  font-family: var(--fuente-titulos);
-  color: #ffffff;
-}
-
-#navbar .nav-link {
-  color: rgba(255, 255, 255, 0.9);
-  font-weight: 600;
-}
-
-#navbar .nav-link:hover,
-#navbar .nav-link.active {
-  color: var(--color-amarillo);
-}
-
 /* Encabezado */
 .brand-banner {
   background-color: var(--color-crema);
@@ -102,13 +73,4 @@ h1, h2, h3, h4 {
   background-color: var(--color-turquesa);
   border-color: var(--color-turquesa);
   color: #ffffff;
-}
-
-.navbar-logo {
-  width: 60px;
-  height: 60px;
-  object-fit: cover;
-  border-radius: 50%;
-  border: 2px solid var(--color-amarillo);
-  background-color: var(--color-crema);
 }

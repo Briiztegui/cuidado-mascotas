@@ -1,0 +1,56 @@
+/* Módulo 6: Solicitudes (prefijo .sol-) */
+
+.sol-tarjeta {
+  background: #ffffff;
+  border: 2px solid #E8CCAD;
+  border-radius: 1.5rem;
+}
+
+.sol-estado {
+  padding: 0.3rem 0.8rem;
+  border-radius: 50rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.sol-pendiente {
+  background: #EDC55B;
+  color: #2B2623;
+}
+
+.sol-aceptada {
+  background: #2f7a73;
+  color: #ffffff;
+}
+
+.sol-rechazada {
+  background: #f6d9d3;
+  color: #a63f2e;
+}
+
+.sol-completada {
+  background: #E8CCAD;
+  color: #2B2623;
+}
+
+.sol-naranja {
+  background: #d46d1d;
+  color: #ffffff;
+}
+
+.sol-naranja:hover {
+  background: #b85d17;
+  color: #ffffff;
+}
+
+.sol-whatsapp {
+  background: #25d366;
+  color: #112218;
+  font-weight: 700;
+}
+
+.sol-whatsapp:hover {
+  background: #1eb857;
+  color: #112218;
+}

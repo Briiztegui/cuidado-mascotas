@@ -19,7 +19,7 @@ const __dirname = path.dirname(__filename);
 const frontendPath = path.resolve(__dirname, "../../");
 
 const app = express();
-app.use(express.json());
+app.use(express.json({ limit: "2mb" }));
 app.use(cors());
 app.use(express.static(frontendPath));
 
@@ -101,6 +101,7 @@ app.get("/api/profesionales", async (req, res) => {
     const profesionales = await Profesional.find(filtro).populate("usuario", "nombre email");
     res.json(profesionales);
   } catch (error) {
+    console.error("Error en GET /api/profesionales:", error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -115,16 +116,23 @@ app.get("/api/profesionales/:id", async (req, res) => {
 
     res.json({ profesional, servicios, resenas });
   } catch (error) {
+    console.error("Error en GET /api/profesionales/:id:", error);
     res.status(500).json({ error: error.message });
   }
 });
 
 app.post("/api/profesionales", async (req, res) => {
   try {
-    const { usuario, zona, contacto, disponibilidadSemanal } = req.body;
+    const { usuario, zona, contacto, disponibilidadSemanal, foto } = req.body;
+    const datosActualizados = { zona, contacto, disponibilidadSemanal };
+
+    if (typeof foto === "string") {
+      datosActualizados.foto = foto;
+    }
+
     const profesional = await Profesional.findOneAndUpdate(
       { usuario },
-      { zona, contacto, disponibilidadSemanal },
+      datosActualizados,
       { new: true, upsert: true }
     );
     res.status(201).json(profesional);
@@ -138,29 +146,54 @@ app.get("/api/servicios", async (req, res) => {
   try {
     const { categoria, precioMax, estrellasMin } = req.query;
     const filtro = {};
-    if (categoria) filtro.categoria = categoria;
-    if (precioMax) filtro.precio = { $lte: Number(precioMax) };
 
-    let servicios = await Servicio.find(filtro).populate({
-      path: "profesional",
-      populate: { path: "usuario", select: "nombre" }
-    });
+    if (categoria && String(categoria).trim() !== "") {
+      filtro.categoria = String(categoria).trim();
+    }
 
-    if (estrellasMin) {
-      servicios = servicios.filter(
-        (s) => s.profesional && s.profesional.calificacionPromedio >= Number(estrellasMin)
-      );
+    if (precioMax !== undefined && String(precioMax).trim() !== "") {
+      const maxNum = Number(precioMax);
+      if (!Number.isNaN(maxNum) && maxNum >= 0) {
+        filtro.precio = { $lte: maxNum };
+      }
+    }
+
+    let servicios = await Servicio.find(filtro)
+      .populate({
+        path: "profesional",
+        model: Profesional,
+        populate: { path: "usuario", select: "nombre" }
+      })
+      .lean();
+
+    if (estrellasMin !== undefined && String(estrellasMin).trim() !== "") {
+      const minEstrellas = Number(estrellasMin);
+      if (!Number.isNaN(minEstrellas)) {
+        servicios = servicios.filter(
+          (s) => s.profesional && Number(s.profesional.calificacionPromedio ?? 0) >= minEstrellas
+        );
+      }
     }
 
     res.json(servicios);
   } catch (error) {
+    console.error("Error en GET /api/servicios:", error);
     res.status(500).json({ error: error.message });
   }
 });
 
 app.post("/api/servicios", async (req, res) => {
   try {
-    const nuevoServicio = new Servicio(req.body);
+    const datosServicio = { ...req.body };
+
+    if (!datosServicio.profesional && datosServicio.usuario) {
+      const prof = await Profesional.findOne({ usuario: datosServicio.usuario });
+      if (prof) {
+        datosServicio.profesional = prof._id;
+      }
+    }
+
+    const nuevoServicio = new Servicio(datosServicio);
     await nuevoServicio.save();
     res.status(201).json(nuevoServicio);
   } catch (error) {
@@ -201,6 +234,41 @@ app.put("/api/solicitudes/:id/estado", async (req, res) => {
     res.json(solicitud);
   } catch (error) {
     res.status(400).json({ error: error.message });
+  }
+});
+
+app.get("/api/solicitudes/cliente/:id", async (req, res) => {
+  try {
+    const solicitudes = await Solicitud.find({ cliente: req.params.id })
+      .populate("servicio", "nombre precio categoria")
+      .populate({
+        path: "profesional",
+        model: Profesional,
+        select: "zona contacto calificacionPromedio foto usuario",
+        populate: { path: "usuario", select: "nombre" }
+      })
+      .sort({ fecha: -1 });
+    res.json(solicitudes);
+  } catch (error) {
+    console.error("Error en GET /api/solicitudes/cliente/:id:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get("/api/solicitudes/pendientes", async (req, res) => {
+  try {
+    const filtro = { estado: "pendiente" };
+    if (req.query.profesionalId) {
+      filtro.profesional = req.query.profesionalId;
+    }
+    if (req.query.clienteId) {
+      filtro.cliente = req.query.clienteId;
+    }
+    const pendientes = await Solicitud.find(filtro).lean();
+    res.json(pendientes);
+  } catch (error) {
+    console.error("Error en GET /api/solicitudes/pendientes:", error);
+    res.status(500).json({ error: error.message });
   }
 });
 

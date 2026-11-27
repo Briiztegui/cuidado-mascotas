@@ -31,28 +31,16 @@ async function peticionApi(endpoint, opciones = {}) {
 
 export const authAPI = {
   registro: (payload) =>
-    peticionApi("/auth/registro", {
-      method: "POST",
-      body: JSON.stringify(payload)
-    }),
+    peticionApi("/auth/registro", { method: "POST", body: JSON.stringify(payload) }),
   login: (payload) =>
-    peticionApi("/auth/login", {
-      method: "POST",
-      body: JSON.stringify(payload)
-    })
+    peticionApi("/auth/login", { method: "POST", body: JSON.stringify(payload) })
 };
 
 export const profesionalesAPI = {
   guardarPerfil: (payload) =>
-    peticionApi("/profesionales", {
-      method: "POST",
-      body: JSON.stringify(payload)
-    }),
+    peticionApi("/profesionales", { method: "POST", body: JSON.stringify(payload) }),
   crearOActualizar: (payload) =>
-    peticionApi("/profesionales", {
-      method: "POST",
-      body: JSON.stringify(payload)
-    }),
+    peticionApi("/profesionales", { method: "POST", body: JSON.stringify(payload) }),
   obtenerPorId: (id) =>
     peticionApi(`/profesionales/${id}`),
   listar: (queryString = "") =>
@@ -63,18 +51,16 @@ export const serviciosAPI = {
   listar: (queryString = "") =>
     peticionApi(`/servicios${queryString ? `?${queryString}` : ""}`),
   crear: (payload) =>
-    peticionApi("/servicios", {
-      method: "POST",
-      body: JSON.stringify(payload)
-    })
+    peticionApi("/servicios", { method: "POST", body: JSON.stringify(payload) })
 };
 
 export const solicitudesAPI = {
   crear: (payload) =>
-    peticionApi("/solicitudes", {
-      method: "POST",
-      body: JSON.stringify(payload)
-    }),
+    peticionApi("/solicitudes", { method: "POST", body: JSON.stringify(payload) }),
+  listarPorCliente: (clienteId) =>
+    peticionApi(`/solicitudes/cliente/${clienteId}`),
+  listarPorProfesional: (profesionalId) =>
+    peticionApi(`/solicitudes/profesional/${profesionalId}`),
   cambiarEstado: (id, estado) =>
     peticionApi(`/solicitudes/${id}/estado`, {
       method: "PUT",
@@ -84,13 +70,14 @@ export const solicitudesAPI = {
 
 export const resenasAPI = {
   crear: (payload) =>
-    peticionApi("/resenas", {
-      method: "POST",
-      body: JSON.stringify(payload)
-    })
+    peticionApi("/resenas", { method: "POST", body: JSON.stringify(payload) }),
+  listarPorProfesional: (profesionalId) =>
+    peticionApi(`/resenas/profesional/${profesionalId}`)
 };
 
 export const estadisticasAPI = {
   profesional: (id) =>
+    peticionApi(`/estadisticas/profesional/${id}`),
+  obtenerPorProfesional: (id) =>
     peticionApi(`/estadisticas/profesional/${id}`)
 };

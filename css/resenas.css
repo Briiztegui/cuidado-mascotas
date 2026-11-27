@@ -1,0 +1,83 @@
+/* Colores del grupo: crema #E8CCAD, naranja #EC802B, amarillo #EDC55B, turquesa #66BCB4 */
+
+body {
+  background-color: #FAF6F1;
+  color: #2B2623;
+  font-family: 'Nunito', sans-serif;
+}
+
+/* Mantiene limpio el navbar inyectado por auth-guard.js */
+#navbar .card,
+#navbar .form-control {
+  border: initial;
+}
+
+/* Títulos y números en naranja */
+.titulo,
+.stat-numero {
+  font-family: 'Fredoka', sans-serif;
+  color: #EC802B;
+}
+
+.stat-numero {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+/* Bordes crema porque Bootstrap los trae grises */
+.card-resena,
+.card-stat,
+.form-control {
+  border: 2px solid #E8CCAD;
+}
+
+.form-control:focus {
+  border-color: #66BCB4;
+  box-shadow: none;
+}
+
+/* Botón naranja */
+.btn-mascotas {
+  background-color: #EC802B;
+  border-color: #EC802B;
+  color: #ffffff;
+  font-family: 'Fredoka', sans-serif;
+}
+
+.btn-mascotas:hover,
+.btn-mascotas:focus {
+  background-color: #d46d1d;
+  border-color: #d46d1d;
+  color: #ffffff;
+}
+
+#mensaje {
+  color: #4da39b;
+}
+
+/* Estrellas: van de 5 a 1 en el HTML y acá se invierten con flex-direction: row-reverse */
+.estrellas {
+  display: inline-flex;
+  flex-direction: row-reverse;
+  gap: 0.25rem;
+}
+
+.estrellas input {
+  position: absolute;
+  opacity: 0;
+}
+
+.estrellas label {
+  font-size: 2.5rem;
+  line-height: 1;
+  color: #E8CCAD;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.estrellas label:hover,
+.estrellas label:hover ~ label,
+.estrellas input:checked ~ label {
+  color: #EDC55B;
+}
