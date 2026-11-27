@@ -25,12 +25,44 @@ body {
   font-family: var(--fuente-principal);
 }
 
-h1, h2, h3, h4, .navbar-brand, .titulo-huellitas {
+h1, h2, h3, h4, .titulo-huellitas {
   font-family: var(--fuente-titulos);
   color: var(--color-texto);
 }
 
-/* Navbar superior */
+/* =========================================================
+   NAVBAR Y LOGO GLOBAL - HUELLITAS
+   ========================================================= */
+#navbar.navbar {
+  font-family: var(--fuente-principal);
+  box-shadow: 0 2px 10px rgba(43, 38, 35, 0.08);
+}
+
+#navbar.bg-primary {
+  background-color: var(--color-turquesa-oscuro) !important;
+}
+
+#navbar.bg-success {
+  background-color: var(--color-naranja) !important;
+}
+
+#navbar .navbar-brand {
+  font-family: var(--fuente-titulos);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1.35rem;
+}
+
+#navbar .nav-link {
+  color: rgba(255, 255, 255, 0.92);
+  font-weight: 600;
+}
+
+#navbar .nav-link:hover,
+#navbar .nav-link.active {
+  color: var(--color-amarillo);
+}
+
 .navbar-huellitas {
   background-color: #ffffff;
   border-bottom: 2px solid var(--color-crema);
@@ -38,11 +70,15 @@ h1, h2, h3, h4, .navbar-brand, .titulo-huellitas {
 
 .logo-navbar,
 .navbar-logo {
-  height: 46px;
-  max-height: 46px;
-  width: auto;
-  max-width: 140px;
-  object-fit: contain;
+  width: 44px;
+  height: 44px;
+  max-width: none;
+  max-height: none;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid var(--color-amarillo);
+  background-color: var(--color-crema);
+  flex-shrink: 0;
 }
 
 .brand-texto {
@@ -52,6 +88,9 @@ h1, h2, h3, h4, .navbar-brand, .titulo-huellitas {
   letter-spacing: 0.3px;
 }
 
+/* =========================================================
+   COMPONENTES COMPARTIDOS
+   ========================================================= */
 /* Tarjeta principal del perfil */
 .card-huellitas {
   background-color: #ffffff;

@@ -151,7 +151,6 @@ function combinarYFiltrarCatalogo(servicios, profesionales, filtros) {
           mapaProfesionalesPorUsuario.get(idRefUsr) ||
           {};
 
-    // Si profObj vino solo como ID string en srv.profesional, buscamos en los mapas
     if (!profObj._id && idRefProf && mapaProfesionalesPorId.has(idRefProf)) {
       profObj = mapaProfesionalesPorId.get(idRefProf);
     }
@@ -301,6 +300,8 @@ function crearTarjetaHtml(item) {
                 class="btn btn-sm btn-pet-primary btn-solicitar-servicio"
                 data-servicio-id="${escaparHTML(item.id)}"
                 data-profesional-id="${escaparHTML(item.profesionalId)}"
+                data-servicio-nombre="${escaparHTML(item.nombreServicio)}"
+                data-nombre-profesional="${escaparHTML(item.nombreProfesional)}"
               >
                 Solicitar servicio
               </button>
@@ -333,6 +334,8 @@ grillaResultados?.addEventListener("click", (event) => {
         detail: {
           servicioId: btnSolicitar.dataset.servicioId,
           profesionalId: btnSolicitar.dataset.profesionalId,
+          servicioNombre: btnSolicitar.dataset.servicioNombre,
+          profesionalNombre: btnSolicitar.dataset.nombreProfesional,
         },
       })
     );

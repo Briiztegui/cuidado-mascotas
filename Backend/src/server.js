@@ -237,6 +237,41 @@ app.put("/api/solicitudes/:id/estado", async (req, res) => {
   }
 });
 
+app.get("/api/solicitudes/cliente/:id", async (req, res) => {
+  try {
+    const solicitudes = await Solicitud.find({ cliente: req.params.id })
+      .populate("servicio", "nombre precio categoria")
+      .populate({
+        path: "profesional",
+        model: Profesional,
+        select: "zona contacto calificacionPromedio foto usuario",
+        populate: { path: "usuario", select: "nombre" }
+      })
+      .sort({ fecha: -1 });
+    res.json(solicitudes);
+  } catch (error) {
+    console.error("Error en GET /api/solicitudes/cliente/:id:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get("/api/solicitudes/pendientes", async (req, res) => {
+  try {
+    const filtro = { estado: "pendiente" };
+    if (req.query.profesionalId) {
+      filtro.profesional = req.query.profesionalId;
+    }
+    if (req.query.clienteId) {
+      filtro.cliente = req.query.clienteId;
+    }
+    const pendientes = await Solicitud.find(filtro).lean();
+    res.json(pendientes);
+  } catch (error) {
+    console.error("Error en GET /api/solicitudes/pendientes:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Reseñas y Estadísticas
 app.post("/api/resenas", async (req, res) => {
   try {

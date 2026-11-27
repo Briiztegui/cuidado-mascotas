@@ -15,7 +15,9 @@ const PAGINAS = {
   "explorar-cliente.html": "cliente",
   "mis-solicitudes.html": "cliente",
   "panel-oferente.html": "oferente",
-  "perfil-oferente.html": "oferente"
+  "perfil-oferente.html": "oferente",
+  "solicitudOferente.html": "oferente",
+  "estadisticas.html": "oferente"
 };
 
 const LOGIN = "index.html";
@@ -26,10 +28,14 @@ const PANEL = {
   cliente: "html/explorar-cliente.html"
 };
 
+const PERFIL_OFERENTE = "html/perfil-oferente.html";
+
 // Botones de la navbar según el rol
 const MENUS = {
   oferente: [
-    { texto: "Mi panel", href: "html/panel-oferente.html", badge: true },
+    { texto: "Mi panel", href: "html/panel-oferente.html" },
+    { texto: "Solicitudes", href: "html/solicitudOferente.html", badge: true },
+    { texto: "Estadísticas", href: "html/estadisticas.html" },
     { texto: "Mi perfil", href: "html/perfil-oferente.html" }
   ],
   cliente: [
@@ -82,7 +88,8 @@ function paginaActual() {
 // Analiza situaciones para dejarte acceder a la app.
 function protegerPagina() {
   const usuario = obtenerUsuario();
-  const acceso = PAGINAS[paginaActual()] || "publico";
+  const actual = paginaActual();
+  const acceso = PAGINAS[actual] || "publico";
 
   // No tenés sesión y querés ingresar a una página protegida. Te lleva al login.
   if (acceso !== "publico" && !usuario) {
@@ -96,9 +103,18 @@ function protegerPagina() {
     return false;
   }
 
-  // Si ya estás logueado y vas al login, te redirecciona a tu panel.
-  if (usuario && paginaActual() === LOGIN) {
-    window.location.replace(RAIZ + PANEL[usuario.rol]);
+  // Si es oferente y aún no completó su perfil profesional, lo manda a perfil-oferente.html.
+  if (usuario && usuario.rol === "oferente" && !usuario.profesionalId && actual === "panel-oferente.html") {
+    window.location.replace(RAIZ + PERFIL_OFERENTE);
+    return false;
+  }
+
+  // Si ya estás logueado y vas al login, te redirecciona a tu panel o a completar perfil.
+  if (usuario && actual === LOGIN) {
+    const destino = usuario.rol === "oferente" && !usuario.profesionalId
+      ? PERFIL_OFERENTE
+      : PANEL[usuario.rol];
+    window.location.replace(RAIZ + destino);
     return false;
   }
 
@@ -163,9 +179,13 @@ async function actualizarBadgeSolicitudes() {
   if (!badge) return;
 
   try {
+    const usuario = obtenerUsuario();
+    const params = usuario?.profesionalId
+      ? `?profesionalId=${encodeURIComponent(usuario.profesionalId)}`
+      : "";
     const token = obtenerToken();
     const headers = token ? { Authorization: `Bearer ${token}` } : {};
-    const res = await fetch(`${CONFIG.API_URL}/solicitudes/pendientes`, { headers });
+    const res = await fetch(`${CONFIG.API_URL}/solicitudes/pendientes${params}`, { headers });
 
     if (res.status === 401 || res.status === 403) return cerrarSesion();
     if (!res.ok) return;
@@ -175,6 +195,8 @@ async function actualizarBadgeSolicitudes() {
     if (cantidad > 0) {
       badge.textContent = cantidad;
       badge.classList.remove("d-none");
+    } else {
+      badge.classList.add("d-none");
     }
   } catch {
     // Silencioso si el endpoint aún no está disponible

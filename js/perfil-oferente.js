@@ -9,6 +9,8 @@ import { profesionalesAPI } from "./api.js";
 import { obtenerUsuario } from "./auth-guard.js";
 import { STORAGE_KEYS } from "./config.js";
 
+const TAMANO_MAX_FOTO_BYTES = 500 * 1024; // 500 KB
+
 function extraerPerfil(resp) {
   if (!resp || typeof resp !== "object") return null;
   if (resp.profesional && typeof resp.profesional === "object") return resp.profesional;
@@ -23,7 +25,15 @@ function extraerListaProfesionales(lista) {
   return [];
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
+function obtenerIdUsuarioDePerfil(perfil) {
+  if (!perfil || perfil.usuario === undefined || perfil.usuario === null) return "";
+  if (typeof perfil.usuario === "object") {
+    return String(perfil.usuario._id ?? perfil.usuario.id ?? "");
+  }
+  return String(perfil.usuario);
+}
+
+async function iniciarPerfilOferente() {
   const formPerfil = document.getElementById("form-perfil");
   const inputZona = document.getElementById("zona");
   const inputContacto = document.getElementById("contacto");
@@ -35,6 +45,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const btnSeleccionarTodo = document.getElementById("btn-seleccionar-todo");
   const tituloBienvenida = document.getElementById("titulo-bienvenida-oferente");
 
+  let fotoBase64Actual = "";
+
   const usuarioLogueado = obtenerUsuario();
 
   if (!usuarioLogueado || usuarioLogueado.rol !== "oferente") {
@@ -45,15 +57,96 @@ document.addEventListener("DOMContentLoaded", async () => {
     tituloBienvenida.textContent = `¡Hola, ${usuarioLogueado.nombre}! Ayudá a los clientes a encontrarte`;
   }
 
-  const usuarioIdRaw = usuarioLogueado._id ?? usuarioLogueado.id;
-  const usuarioId = usuarioIdRaw !== undefined && usuarioIdRaw !== null ? String(usuarioIdRaw) : "";
+  const idsUsuarioPosibles = new Set(
+    [usuarioLogueado._id, usuarioLogueado.id]
+      .filter((val) => val !== undefined && val !== null && String(val).trim() !== "")
+      .map((val) => String(val))
+  );
+
+  const usuarioIdPrincipal = usuarioLogueado._id
+    ? String(usuarioLogueado._id)
+    : usuarioLogueado.id
+    ? String(usuarioLogueado.id)
+    : "";
+
   let profesionalIdActual = usuarioLogueado.profesionalId ? String(usuarioLogueado.profesionalId) : null;
 
-  if (!usuarioId) {
+  function mostrarAlerta(mensaje, tipo) {
+    if (!alerta) return;
+    alerta.textContent = mensaje;
+    alerta.className = `alert alert-${tipo} d-block rounded-3`;
+  }
+
+  function ocultarAlerta() {
+    if (!alerta) return;
+    alerta.className = "alert d-none";
+    alerta.textContent = "";
+  }
+
+  function mostrarVistaPreviaFoto(dataUrl) {
+    if (!previewFotoOferente || !iconoAvatarDefault) return;
+
+    if (dataUrl) {
+      previewFotoOferente.src = dataUrl;
+      previewFotoOferente.classList.remove("d-none");
+      iconoAvatarDefault.classList.add("d-none");
+    } else {
+      previewFotoOferente.src = "";
+      previewFotoOferente.classList.add("d-none");
+      iconoAvatarDefault.classList.remove("d-none");
+    }
+  }
+
+  function establecerEstadoCargando(cargando) {
+    if (inputZona) inputZona.disabled = cargando;
+    if (inputContacto) inputContacto.disabled = cargando;
+    if (inputFotoPerfil) inputFotoPerfil.disabled = cargando;
+    if (btnSeleccionarTodo) btnSeleccionarTodo.disabled = cargando;
+    document.querySelectorAll(".disp-check").forEach((cb) => {
+      cb.disabled = cargando;
+    });
+
+    if (btnGuardar) {
+      btnGuardar.disabled = cargando;
+      btnGuardar.textContent = cargando ? "CARGANDO PERFIL..." : "GUARDAR Y ACTIVAR PERFIL";
+    }
+  }
+
+  if (!usuarioIdPrincipal) {
     mostrarAlerta("No se pudo identificar el ID del usuario en la sesión actual.", "danger");
   }
 
-  // Seleccionar / Quitar todo
+  if (inputFotoPerfil) {
+    inputFotoPerfil.addEventListener("change", (event) => {
+      ocultarAlerta();
+      const archivo = event.target.files?.[0];
+
+      if (!archivo) {
+        fotoBase64Actual = "";
+        mostrarVistaPreviaFoto("");
+        return;
+      }
+
+      if (archivo.size > TAMANO_MAX_FOTO_BYTES) {
+        mostrarAlerta("La imagen supera los 500 KB. Elegí un archivo más liviano.", "danger");
+        inputFotoPerfil.value = "";
+        fotoBase64Actual = "";
+        mostrarVistaPreviaFoto("");
+        return;
+      }
+
+      const lector = new FileReader();
+      lector.onload = () => {
+        fotoBase64Actual = String(lector.result || "");
+        mostrarVistaPreviaFoto(fotoBase64Actual);
+      };
+      lector.onerror = () => {
+        mostrarAlerta("No se pudo leer la imagen seleccionada.", "danger");
+      };
+      lector.readAsDataURL(archivo);
+    });
+  }
+
   if (btnSeleccionarTodo) {
     btnSeleccionarTodo.addEventListener("click", () => {
       const checks = Array.from(document.querySelectorAll(".disp-check"));
@@ -64,60 +157,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  // Precargar perfil existente si ya está guardado en MongoDB
-  await cargarPerfilExistente();
-
-  async function cargarPerfilExistente() {
-    if (!usuarioId && !profesionalIdActual) return;
-
-    try {
-      let perfil = null;
-
-      if (profesionalIdActual) {
-        const resp = await profesionalesAPI.obtenerPorId(profesionalIdActual);
-        perfil = extraerPerfil(resp);
-      }
-
-      if (!perfil && usuarioId) {
-        const lista = await profesionalesAPI.listar();
-        const profesionales = extraerListaProfesionales(lista);
-
-        perfil =
-          profesionales.find((p) => {
-            const idUsuarioPerfil =
-              typeof p.usuario === "object" && p.usuario !== null
-                ? p.usuario._id ?? p.usuario.id
-                : p.usuario;
-            return idUsuarioPerfil !== undefined && idUsuarioPerfil !== null && String(idUsuarioPerfil) === usuarioId;
-          }) || null;
-      }
-
-      if (perfil && perfil._id) {
-        profesionalIdActual = String(perfil._id);
-        usuarioLogueado.profesionalId = perfil._id;
-        localStorage.setItem(STORAGE_KEYS.USUARIO, JSON.stringify(usuarioLogueado));
-
-        if (inputZona) inputZona.value = perfil.zona || "";
-        if (inputContacto) inputContacto.value = perfil.contacto || "";
-
-        if (Array.isArray(perfil.disponibilidadSemanal)) {
-          document.querySelectorAll(".disp-check").forEach((cb) => {
-            cb.checked = perfil.disponibilidadSemanal.includes(cb.value);
-          });
-        }
-      }
-    } catch (error) {
-      console.warn("Aún no hay un perfil previo para precargar:", error.message);
-    }
-  }
-
-  // Guardar o actualizar perfil en MongoDB
   if (formPerfil) {
     formPerfil.addEventListener("submit", async (e) => {
       e.preventDefault();
       ocultarAlerta();
 
-      if (!usuarioId) {
+      if (!usuarioIdPrincipal) {
         mostrarAlerta("Sesión inválida: falta el identificador del usuario.", "danger");
         return;
       }
@@ -147,10 +192,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
 
       const payloadPerfil = {
-        usuario: usuarioId,
+        usuario: usuarioIdPrincipal,
         zona,
         contacto,
-        disponibilidadSemanal: disponibilidadSeleccionada
+        disponibilidadSemanal: disponibilidadSeleccionada,
+        foto: fotoBase64Actual
       };
 
       try {
@@ -169,15 +215,17 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         mostrarAlerta("¡Perfil guardado y activado correctamente! Redirigiendo a tu panel...", "success");
+        window.scrollTo({ top: 0, behavior: "smooth" });
 
         setTimeout(() => {
           window.location.href = "panel-oferente.html";
-        }, 1300);
+        }, 1000);
       } catch (error) {
         mostrarAlerta(
           error.message || "No se pudo guardar el perfil. Verificá que el backend esté encendido.",
           "danger"
         );
+        window.scrollTo({ top: 0, behavior: "smooth" });
       } finally {
         if (btnGuardar) {
           btnGuardar.disabled = false;
@@ -187,15 +235,75 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  function mostrarAlerta(mensaje, tipo) {
-    if (!alerta) return;
-    alerta.textContent = mensaje;
-    alerta.className = `alert alert-${tipo} d-block rounded-3`;
+  async function cargarPerfilExistente() {
+    if (idsUsuarioPosibles.size === 0 && !profesionalIdActual) return;
+
+    establecerEstadoCargando(true);
+    mostrarAlerta("Cargando datos de tu perfil...", "info");
+
+    try {
+      let perfil = null;
+
+      if (profesionalIdActual) {
+        try {
+          const resp = await profesionalesAPI.obtenerPorId(profesionalIdActual);
+          perfil = extraerPerfil(resp);
+        } catch {
+          perfil = null;
+        }
+      }
+
+      if (!perfil && idsUsuarioPosibles.size > 0) {
+        const lista = await profesionalesAPI.listar();
+        const profesionales = extraerListaProfesionales(lista);
+
+        perfil =
+          profesionales.find((p) => {
+            const idUsuarioPerfil = obtenerIdUsuarioDePerfil(p);
+            return idUsuarioPerfil && idsUsuarioPosibles.has(idUsuarioPerfil);
+          }) || null;
+      }
+
+      if (perfil && perfil._id) {
+        profesionalIdActual = String(perfil._id);
+        usuarioLogueado.profesionalId = perfil._id;
+        localStorage.setItem(STORAGE_KEYS.USUARIO, JSON.stringify(usuarioLogueado));
+
+        if (inputZona) inputZona.value = perfil.zona || "";
+        if (inputContacto) inputContacto.value = perfil.contacto || "";
+
+        const fotoGuardada = perfil.foto || perfil.fotoPerfil || perfil.imagen || "";
+        if (fotoGuardada) {
+          fotoBase64Actual = fotoGuardada;
+          mostrarVistaPreviaFoto(fotoGuardada);
+        } else {
+          fotoBase64Actual = "";
+          mostrarVistaPreviaFoto("");
+        }
+
+        const franjasGuardadas = Array.isArray(perfil.disponibilidadSemanal)
+          ? perfil.disponibilidadSemanal.map((f) => String(f).trim())
+          : [];
+
+        document.querySelectorAll(".disp-check").forEach((cb) => {
+          cb.checked = franjasGuardadas.includes(String(cb.value).trim());
+        });
+      }
+
+      ocultarAlerta();
+    } catch (error) {
+      ocultarAlerta();
+      console.warn("Aún no hay un perfil previo para precargar:", error.message);
+    } finally {
+      establecerEstadoCargando(false);
+    }
   }
 
-  function ocultarAlerta() {
-    if (!alerta) return;
-    alerta.className = "alert d-none";
-    alerta.textContent = "";
-  }
-});
+  await cargarPerfilExistente();
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", iniciarPerfilOferente);
+} else {
+  iniciarPerfilOferente();
+}
