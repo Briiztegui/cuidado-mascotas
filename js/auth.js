@@ -57,7 +57,7 @@ function redirectByRole(usuario, isNewAccount = false) {
   }
 
   if (usuario.rol === "oferente") {
-    if (isNewAccount) {
+    if (isNewAccount || !usuario.profesionalId) {
       window.location.assign("./html/perfil-oferente.html");
       return;
     }

@@ -26,7 +26,9 @@ const PANEL = {
     cliente:  "html/explorar-cliente.html",
 };
 
-// Botones de la navbar segun el rol (badge, punto rojo para las solicitudes)
+const PERFIL_OFERENTE = "html/perfil-oferente.html";
+
+// Botones de la navbar según el rol
 const MENUS = {
     oferente: [
         { texto: "Mi panel",  href: "html/panel-oferente.html", badge: true },
@@ -73,10 +75,11 @@ function paginaActual() {
     return window.location.pathname.split("/").pop() || LOGIN;
 }
 
-// Analiza tres situaciones para dejarte acceder a la app.
+// Analiza situaciones para dejarte acceder a la app.
 function protegerPagina() {
-	const usuario = obtenerUsuario();
-	const acceso = PAGINAS[paginaActual()] || "publico";
+  const usuario = obtenerUsuario();
+  const actual = paginaActual();
+  const acceso = PAGINAS[actual] || "publico";
 
     // No tenes sesion y queres ingresar con un rol. Te lleva al login.
 	if (acceso !== "publico" && !usuario) {
@@ -90,12 +93,22 @@ function protegerPagina() {
 		return false;
 	}
 
-    // Si ya estas logueado y queres ir al login, te redirecciona a tu rol.
-	if (usuario && paginaActual() === LOGIN) {
-		window.location.replace(RAIZ + PANEL[usuario.rol]);
-		return false;
-	}
-	return true;
+  // Si es oferente y aún no completó su perfil profesional, lo manda a perfil-oferente.html.
+  if (usuario && usuario.rol === "oferente" && !usuario.profesionalId && actual === "panel-oferente.html") {
+    window.location.replace(RAIZ + PERFIL_OFERENTE);
+    return false;
+  }
+
+  // Si ya estás logueado y vas al login, te redirecciona a tu panel o a completar perfil.
+  if (usuario && actual === LOGIN) {
+    const destino = usuario.rol === "oferente" && !usuario.profesionalId
+      ? PERFIL_OFERENTE
+      : PANEL[usuario.rol];
+    window.location.replace(RAIZ + destino);
+    return false;
+  }
+
+  return true;
 }
 
 // Arma el menu.
