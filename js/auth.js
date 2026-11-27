@@ -13,8 +13,11 @@ const registerForm = document.querySelector("#register-form");
 
 function showPanel(panelName) {
   const isLogin = panelName === "login";
-  document.querySelector("#login-panel").hidden = !isLogin;
-  document.querySelector("#register-panel").hidden = isLogin;
+  const loginPanel = document.querySelector("#login-panel");
+  const registerPanel = document.querySelector("#register-panel");
+
+  if (loginPanel) loginPanel.hidden = !isLogin;
+  if (registerPanel) registerPanel.hidden = isLogin;
 
   document.querySelectorAll("[data-auth-tab]").forEach((tab) => {
     const active = tab.dataset.authTab === panelName;
@@ -37,6 +40,7 @@ function clearMessages() {
 
 function showMessage(form, text, isError = true) {
   const message = document.querySelector(`#${form.id.replace("-form", "-message")}`);
+  if (!message) return;
   message.textContent = text;
   message.classList.toggle("text-danger", isError);
   message.classList.toggle("text-success", !isError);
@@ -44,6 +48,7 @@ function showMessage(form, text, isError = true) {
 
 function setSubmitting(form, isSubmitting) {
   const button = form.querySelector('[type="submit"]');
+  if (!button) return;
   button.disabled = isSubmitting;
   button.textContent = isSubmitting
     ? "Un momento..."
@@ -70,75 +75,93 @@ function redirectByRole(usuario, isNewAccount = false) {
 }
 
 function saveUser(response) {
-  const usuario = response && response.usuario;
-  if (!usuario || !usuario.id || !["cliente", "oferente"].includes(usuario.rol)) {
+  const rawUsuario = response && (response.usuario || response.data?.usuario || response.data);
+  const id = rawUsuario && (rawUsuario.id ?? rawUsuario._id);
+
+  if (!rawUsuario || !id || !["cliente", "oferente"].includes(rawUsuario.rol)) {
     throw new Error("El servidor devolvió datos de usuario incompletos.");
   }
 
-  localStorage.setItem(STORAGE_KEYS.USUARIO, JSON.stringify(usuario));
-  return usuario;
+  const usuarioNormalizado = {
+    ...rawUsuario,
+    id: String(id),
+    _id: String(rawUsuario._id ?? id)
+  };
+
+  localStorage.setItem(STORAGE_KEYS.USUARIO, JSON.stringify(usuarioNormalizado));
+
+  const token = response.token || rawUsuario.token;
+  if (token) {
+    localStorage.setItem(STORAGE_KEYS.TOKEN, String(token));
+  }
+
+  return usuarioNormalizado;
 }
 
 document.querySelectorAll("[data-auth-tab]").forEach((tab) => {
   tab.addEventListener("click", () => showPanel(tab.dataset.authTab));
 });
 
-loginForm.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  clearMessages();
+if (loginForm) {
+  loginForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    clearMessages();
 
-  if (!loginForm.reportValidity()) return;
+    if (!loginForm.reportValidity()) return;
 
-  const formData = new FormData(loginForm);
-  const credentials = {
-    email: String(formData.get("email")).trim().toLowerCase(),
-    password: String(formData.get("password"))
-  };
+    const formData = new FormData(loginForm);
+    const credentials = {
+      email: String(formData.get("email")).trim().toLowerCase(),
+      password: String(formData.get("password"))
+    };
 
-  setSubmitting(loginForm, true);
-  try {
-    const response = await authAPI.login(credentials);
-    const usuario = saveUser(response);
-    redirectByRole(usuario);
-  } catch (error) {
-    showMessage(loginForm, error.message);
-  } finally {
-    setSubmitting(loginForm, false);
-  }
-});
+    setSubmitting(loginForm, true);
+    try {
+      const response = await authAPI.login(credentials);
+      const usuario = saveUser(response);
+      redirectByRole(usuario);
+    } catch (error) {
+      showMessage(loginForm, error.message);
+    } finally {
+      setSubmitting(loginForm, false);
+    }
+  });
+}
 
-registerForm.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  clearMessages();
+if (registerForm) {
+  registerForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    clearMessages();
 
-  if (!registerForm.reportValidity()) return;
+    if (!registerForm.reportValidity()) return;
 
-  const formData = new FormData(registerForm);
-  const datos = {
-    nombre: String(formData.get("nombre")).trim(),
-    email: String(formData.get("email")).trim().toLowerCase(),
-    password: String(formData.get("password")),
-    rol: String(formData.get("rol"))
-  };
+    const formData = new FormData(registerForm);
+    const datos = {
+      nombre: String(formData.get("nombre")).trim(),
+      email: String(formData.get("email")).trim().toLowerCase(),
+      password: String(formData.get("password")),
+      rol: String(formData.get("rol"))
+    };
 
-  if (!datos.nombre) {
-    showMessage(registerForm, "Ingresá tu nombre y apellido.");
-    return;
-  }
-  if (!["cliente", "oferente"].includes(datos.rol)) {
-    showMessage(registerForm, "Seleccioná un tipo de cuenta válido.");
-    return;
-  }
+    if (!datos.nombre) {
+      showMessage(registerForm, "Ingresá tu nombre y apellido.");
+      return;
+    }
+    if (!["cliente", "oferente"].includes(datos.rol)) {
+      showMessage(registerForm, "Seleccioná un tipo de cuenta válido.");
+      return;
+    }
 
-  setSubmitting(registerForm, true);
-  try {
-    const response = await authAPI.registro(datos);
-    const usuario = saveUser(response);
-    showMessage(registerForm, "Cuenta creada. Te estamos llevando a tu espacio.", false);
-    redirectByRole(usuario, true);
-  } catch (error) {
-    showMessage(registerForm, error.message);
-  } finally {
-    setSubmitting(registerForm, false);
-  }
-});
+    setSubmitting(registerForm, true);
+    try {
+      const response = await authAPI.registro(datos);
+      const usuario = saveUser(response);
+      showMessage(registerForm, "Cuenta creada. Te estamos llevando a tu espacio.", false);
+      redirectByRole(usuario, true);
+    } catch (error) {
+      showMessage(registerForm, error.message);
+    } finally {
+      setSubmitting(registerForm, false);
+    }
+  });
+}
