@@ -9,7 +9,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mis servicios | Huellitas</title>
+    <title>Panel del oferente | Huellitas</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,115 +20,242 @@
 
     <link rel="stylesheet" href="../css/estilo.css">
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/solicitud.css">
+    <link rel="stylesheet" href="../css/resenas.css">
   </head>
 
-  <body>
+  <body class="bg-light">
     <header id="navbarContainer"></header>
 
-    <main class="container py-5">
-      <section class="brand-banner rounded-4 p-4 mb-5">
-        <h1 id="titulo-panel-oferente">Mis servicios</h1>
-        <p class="mb-0">Publicá y administrá los servicios que ofrecés.</p>
+    <main class="container py-4 py-md-5">
+      <section class="brand-banner rounded-4 p-4 mb-4">
+        <h1 id="titulo-panel-oferente" class="mb-1">Mis servicios</h1>
+        <p class="mb-0">Publicá y administrá tus servicios, solicitudes y estadísticas desde un solo lugar.</p>
       </section>
 
       <div id="alerta-servicios" class="alert d-none rounded-3" role="alert"></div>
 
-      <!-- Formulario -->
-      <section class="mb-5">
-        <div class="card filter-card p-4">
-          <h2 class="h4 mb-4">Publicar un servicio</h2>
+      <!-- Pestañas del panel -->
+      <ul class="nav nav-pills gap-2 mb-4" id="panelOferenteTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button
+            class="nav-link active fw-semibold rounded-pill px-4"
+            id="tab-servicios-btn"
+            data-bs-toggle="pill"
+            data-bs-target="#panel-servicios"
+            type="button"
+            role="tab"
+            aria-controls="panel-servicios"
+            aria-selected="true"
+          >
+            <i class="bi bi-briefcase me-1"></i>
+            1. Servicios
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button
+            class="nav-link fw-semibold rounded-pill px-4"
+            id="tab-solicitudes-btn"
+            data-bs-toggle="pill"
+            data-bs-target="#panel-solicitudes"
+            type="button"
+            role="tab"
+            aria-controls="panel-solicitudes"
+            aria-selected="false"
+          >
+            <i class="bi bi-inbox me-1"></i>
+            2. Solicitudes recibidas
+            <span id="badgeSolicitudesNuevas" class="badge text-bg-warning rounded-pill ms-1">0</span>
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button
+            class="nav-link fw-semibold rounded-pill px-4"
+            id="tab-stats-btn"
+            data-bs-toggle="pill"
+            data-bs-target="#panel-stats-resenas"
+            type="button"
+            role="tab"
+            aria-controls="panel-stats-resenas"
+            aria-selected="false"
+          >
+            <i class="bi bi-bar-chart-line me-1"></i>
+            3. Estadísticas y reseñas
+          </button>
+        </li>
+      </ul>
 
-          <form id="formularioServicio">
-            <div class="mb-3">
-              <label for="categoria" class="form-label">Categoría</label>
-              <select id="categoria" class="form-select" required>
-                <option value="" selected disabled>Seleccioná una categoría</option>
-                <option value="paseo">Paseo</option>
-                <option value="guarderia">Pet sitting / Guardería</option>
-                <option value="veterinaria">Veterinaria</option>
-              </select>
+      <div class="tab-content" id="panelOferenteTabContent">
+        <!-- 1. SERVICIOS -->
+        <div
+          class="tab-pane fade show active"
+          id="panel-servicios"
+          role="tabpanel"
+          aria-labelledby="tab-servicios-btn"
+          tabindex="0"
+        >
+          <div class="row g-4 align-items-start">
+            <div class="col-12 col-lg-5">
+              <div class="card filter-card p-4">
+                <h2 class="h4 mb-3">Publicar un servicio</h2>
+
+                <form id="formularioServicio">
+                  <div class="mb-3">
+                    <label for="categoria" class="form-label">Categoría</label>
+                    <select id="categoria" class="form-select" required>
+                      <option value="" selected disabled>Seleccioná una categoría</option>
+                      <option value="paseo">Paseo</option>
+                      <option value="guarderia">Pet sitting / Guardería</option>
+                      <option value="veterinaria">Veterinaria</option>
+                    </select>
+                  </div>
+
+                  <div class="mb-3">
+                    <label for="nombreServicio" class="form-label">Nombre del servicio</label>
+                    <input
+                      type="text"
+                      id="nombreServicio"
+                      class="form-control"
+                      placeholder="Ej: Paseos individuales"
+                      required
+                    >
+                  </div>
+
+                  <div class="mb-3">
+                    <label for="descripcion" class="form-label">Descripción</label>
+                    <textarea
+                      id="descripcion"
+                      class="form-control"
+                      rows="3"
+                      placeholder="Contá de qué se trata tu servicio..."
+                      required
+                    ></textarea>
+                  </div>
+
+                  <div class="mb-4">
+                    <label for="precio" class="form-label">Precio</label>
+                    <input
+                      type="number"
+                      id="precio"
+                      class="form-control"
+                      min="0"
+                      step="0.01"
+                      placeholder="Ingresá el precio"
+                      required
+                    >
+                  </div>
+
+                  <button type="submit" id="btn-publicar-servicio" class="btn btn-pet-primary w-100">
+                    <i class="bi bi-plus-circle me-2"></i>
+                    Publicar servicio
+                  </button>
+                </form>
+              </div>
             </div>
 
-            <div class="mb-3">
-              <label for="nombreServicio" class="form-label">Nombre del servicio</label>
-              <input
-                type="text"
-                id="nombreServicio"
-                class="form-control"
-                placeholder="Ej: Paseos individuales"
-                required
-              >
+            <div class="col-12 col-lg-7">
+              <div class="card filter-card p-4">
+                <h2 class="h4 mb-3">Mis servicios publicados</h2>
+
+                <div id="serviciosActivos" class="row g-3">
+                  <div id="mensajeSinServicios" class="col-12 text-center py-3">
+                    <p class="text-muted mb-0">Todavía no publicaste ningún servicio.</p>
+                  </div>
+                </div>
+              </div>
             </div>
-
-            <div class="mb-3">
-              <label for="descripcion" class="form-label">Descripción</label>
-              <textarea
-                id="descripcion"
-                class="form-control"
-                rows="4"
-                placeholder="Contá de qué se trata tu servicio..."
-                required
-              ></textarea>
-            </div>
-
-            <div class="mb-4">
-              <label for="precio" class="form-label">Precio</label>
-              <input
-                type="number"
-                id="precio"
-                class="form-control"
-                min="0"
-                step="0.01"
-                placeholder="Ingresá el precio"
-                required
-              >
-            </div>
-
-            <button type="submit" id="btn-publicar-servicio" class="btn btn-pet-primary">
-              <i class="bi bi-plus-circle me-2"></i>
-              Publicar servicio
-            </button>
-          </form>
-        </div>
-      </section>
-
-      <!-- Listado de servicios -->
-      <section class="mb-5">
-        <h2 class="h4 mb-4">Mis servicios publicados</h2>
-
-        <div id="serviciosActivos" class="row g-3">
-          <div id="mensajeSinServicios" class="col-12 text-center">
-            <p class="text-muted">Todavía no publicaste ningún servicio.</p>
           </div>
         </div>
-      </section>
 
-      <!-- Secciones adicionales del panel -->
-      <section>
-        <div class="row g-3">
-          <div class="col-12 col-md-6">
-            <div class="border rounded-3 p-3 bg-white h-100">
-              <h2 class="h6 fw-bold text-success mb-1">2. Solicitudes recibidas</h2>
-              <p class="small text-secondary mb-0">
-                Aceptar, rechazar o marcar como completadas las solicitudes recibidas.
-              </p>
-            </div>
-          </div>
-
-          <div class="col-12 col-md-6">
-            <div class="border rounded-3 p-3 bg-white h-100">
-              <h2 class="h6 fw-bold text-success mb-1">3. Estadísticas y reseñas</h2>
-              <p class="small text-secondary mb-0">
-                Cantidad de servicios, solicitudes por estado, calificación promedio y reseñas.
-              </p>
+        <!-- 2. SOLICITUDES RECIBIDAS -->
+        <div
+          class="tab-pane fade"
+          id="panel-solicitudes"
+          role="tabpanel"
+          aria-labelledby="tab-solicitudes-btn"
+          tabindex="0"
+        >
+          <div class="card filter-card p-4">
+            <h2 class="h4 mb-2">Solicitudes recibidas</h2>
+            <p class="text-secondary small mb-3">
+              Aceptar, rechazar o marcar como completadas las solicitudes recibidas.
+            </p>
+            <div id="alertaSolicitudesOferente" class="mb-3"></div>
+            <div id="contenedorSolicitudesOferente" class="row g-3">
+              <p class="text-secondary mb-0">Todavía no hay solicitudes cargadas para mostrar acá.</p>
             </div>
           </div>
         </div>
-      </section>
+
+        <!-- 3. ESTADÍSTICAS Y RESEÑAS -->
+        <div
+          class="tab-pane fade"
+          id="panel-stats-resenas"
+          role="tabpanel"
+          aria-labelledby="tab-stats-btn"
+          tabindex="0"
+        >
+          <section id="seccion-estadisticas-resenas">
+            <h2 class="h4 mb-3">Mis estadísticas y reseñas</h2>
+
+            <div id="alertaStats" class="alert alert-warning d-none" role="alert"></div>
+
+            <div class="row g-3 mb-4">
+              <div class="col-12 col-md-4">
+                <div class="card card-stat shadow-sm h-100 text-center p-3">
+                  <h3 class="h6 text-muted text-uppercase small mb-2">Servicios activos</h3>
+                  <span id="statServicios" class="stat-numero">0</span>
+                </div>
+              </div>
+
+              <div class="col-12 col-md-4">
+                <div class="card card-stat shadow-sm h-100 text-center p-3">
+                  <h3 class="h6 text-muted text-uppercase small mb-2">Calificación promedio</h3>
+                  <span id="statPromedio" class="stat-numero">0.0 ★</span>
+                </div>
+              </div>
+
+              <div class="col-12 col-md-4">
+                <div class="card card-stat shadow-sm h-100 p-3">
+                  <h3 class="h6 text-muted text-uppercase small text-center mb-2">Solicitudes por estado</h3>
+                  <ul class="list-group list-group-flush small">
+                    <li class="list-group-item d-flex justify-content-between px-0 py-1 bg-transparent">
+                      <span>Pendientes</span>
+                      <span id="statPendientes" class="badge bg-secondary rounded-pill">0</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-0 py-1 bg-transparent">
+                      <span>Aceptadas</span>
+                      <span id="statAceptadas" class="badge bg-primary rounded-pill">0</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-0 py-1 bg-transparent">
+                      <span>Completadas</span>
+                      <span id="statCompletadas" class="badge bg-success rounded-pill">0</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-0 py-1 bg-transparent">
+                      <span>Rechazadas</span>
+                      <span id="statRechazadas" class="badge bg-danger rounded-pill">0</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="card card-resena shadow-sm">
+              <div class="card-header bg-white fw-semibold">
+                Reseñas recibidas
+              </div>
+              <div id="listaResenasOferente" class="card-body">
+                <p class="text-muted mb-0">Cargando reseñas...</p>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script type="module" src="../js/auth-guard.js"></script>
     <script type="module" src="../js/servicios-oferente.js"></script>
+    <script type="module" src="../js/resenas-stats.js"></script>
   </body>
 </html>
