@@ -1,3 +1,12 @@
+/**
+ * MÓDULO 5: Buscador y Filtros Combinables del Cliente (Integrante 5)
+ * - Carga el listado de oferentes/servicios activos con su calificación promedio.
+ * - Captura los filtros combinables (categoría/tipo de mascota, precio máximo, estrellas mínimas, zona, disponibilidad) y consulta a serviciosAPI.buscar() / profesionalesAPI.listar().
+ * - Renderiza las tarjetas de resultados y abre el modal de solicitud.
+ */
+
+import { CONFIG, STORAGE_KEYS } from "./config.js";
+
 const filtrosForm = document.getElementById("filtrosForm");
 const inputCategoria = document.getElementById("filtroCategoria");
 const inputPrecioMax = document.getElementById("filtroPrecioMax");
@@ -14,26 +23,23 @@ const estadoCarga = document.getElementById("estadoCarga");
 const estadoError = document.getElementById("estadoError");
 const estadoVacio = document.getElementById("estadoVacio");
 
-// Helper para mostrar un solo estado a la vez
 function mostrarEstado({ cargando = false, error = false, vacio = false }) {
-  estadoCarga.classList.toggle("d-none", !cargando);
-  estadoError.classList.toggle("d-none", !error);
-  estadoVacio.classList.toggle("d-none", !vacio);
-  grillaResultados.classList.toggle("d-none", cargando || error || vacio);
+  estadoCarga?.classList.toggle("d-none", !cargando);
+  estadoError?.classList.toggle("d-none", !error);
+  estadoVacio?.classList.toggle("d-none", !vacio);
+  grillaResultados?.classList.toggle("d-none", cargando || error || vacio);
 }
 
-//lectura de los valores actuales de los filtros
 function obtenerFiltros() {
   return {
-    categoria: inputCategoria.value.trim(),
-    precioMax: inputPrecioMax.value.trim(),
-    estrellasMin: inputEstrellasMin.value.trim(),
-    zona: inputZona.value.trim(),
-    disponibilidad: inputDisponibilidad.value.trim(),
+    categoria: inputCategoria?.value.trim() || "",
+    precioMax: inputPrecioMax?.value.trim() || "",
+    estrellasMin: inputEstrellasMin?.value.trim() || "",
+    zona: inputZona?.value.trim() || "",
+    disponibilidad: inputDisponibilidad?.value.trim() || "",
   };
 }
 
-//Arma los query string sin parámetros vacíos
 function construirQueryString(paramsObj) {
   const params = new URLSearchParams();
 
@@ -47,13 +53,15 @@ function construirQueryString(paramsObj) {
   return query ? `?${query}` : "";
 }
 
-// Obtener URL base configurable (definida en js/config.js)
-function obtenerApiUrl() {
-  const base = typeof API_URL !== "undefined" ? API_URL : "";
-  return base.replace(/\/+$/, ""); // Quita barras extra al final si las hubiera
+function obtenerApiRoot() {
+  const base =
+    CONFIG?.API_URL ||
+    (typeof API_URL !== "undefined" ? API_URL : "") ||
+    "http://localhost:3000/api";
+  const limpia = String(base).replace(/\/+$/, "");
+  return limpia.endsWith("/api") ? limpia : `${limpia}/api`;
 }
 
-// Helper genérico para hacer un GET y verificar la respuesta HTTP
 async function fetchJson(url) {
   const respuesta = await fetch(url);
 
@@ -64,9 +72,8 @@ async function fetchJson(url) {
   return await respuesta.json();
 }
 
-// Consultar servicios y profesionales según los filtros activos
 async function obtenerDatosCatalogo(filtros) {
-  const baseUrl = obtenerApiUrl();
+  const apiRoot = obtenerApiRoot();
 
   const queryServicios = construirQueryString({
     categoria: filtros.categoria,
@@ -79,16 +86,14 @@ async function obtenerDatosCatalogo(filtros) {
     disponibilidad: filtros.disponibilidad,
   });
 
-  const urlServicios = `${baseUrl}/api/servicios${queryServicios}`;
-  const urlProfesionales = `${baseUrl}/api/profesionales${queryProfesionales}`;
+  const urlServicios = `${apiRoot}/servicios${queryServicios}`;
+  const urlProfesionales = `${apiRoot}/profesionales${queryProfesionales}`;
 
-  // Promise.all dispara ambos pedidos en paralelo para no perder tiempo
   const [serviciosData, profesionalesData] = await Promise.all([
     fetchJson(urlServicios),
     fetchJson(urlProfesionales),
   ]);
 
-  // por si el backend me devuelve un objeto con el array dentro o un array vacio. 
   const servicios = Array.isArray(serviciosData)
     ? serviciosData
     : serviciosData.servicios || serviciosData.data || [];
@@ -100,49 +105,96 @@ async function obtenerDatosCatalogo(filtros) {
   return { servicios, profesionales };
 }
 
-// Saca el ID del profesional tanto si viene como texto/ObjectId como si viene como objeto completo
-function obtenerIdProfesional(refProfesional) {
-  if (!refProfesional) return "";
-  if (typeof refProfesional === "string") return refProfesional;
-  return String(refProfesional._id || refProfesional.id || "");
+function obtenerIdReferencia(ref) {
+  if (!ref) return "";
+  if (typeof ref === "string") return ref;
+  return String(ref._id || ref.id || "");
+}
+
+function obtenerNombreUsuarioSesionSiCoincide(idUsuarioRef) {
+  if (!idUsuarioRef || !STORAGE_KEYS?.USUARIO) return "";
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.USUARIO);
+    const u = raw ? JSON.parse(raw) : null;
+    if (!u) return "";
+    const idsSesion = [u._id, u.id].filter(Boolean).map(String);
+    if (idsSesion.includes(String(idUsuarioRef))) {
+      return u.nombre || "";
+    }
+  } catch {
+    // ignorar
+  }
+  return "";
 }
 
 function combinarYFiltrarCatalogo(servicios, profesionales, filtros) {
-  // Arma un diccionario/mapa por ID para encontrar al profesional al toque
-  const mapaProfesionales = new Map();
+  const mapaProfesionalesPorId = new Map();
+  const mapaProfesionalesPorUsuario = new Map();
+
   profesionales.forEach((prof) => {
-    const id = String(prof._id || prof.id || "");
-    if (id) mapaProfesionales.set(id, prof);
+    const idProf = String(prof._id || prof.id || "");
+    if (idProf) mapaProfesionalesPorId.set(idProf, prof);
+
+    const idUsr = obtenerIdReferencia(prof.usuario);
+    if (idUsr) mapaProfesionalesPorUsuario.set(idUsr, prof);
   });
 
-  // Une cada servicio con su profesional
   const catalogo = servicios.map((srv) => {
-    const profObj =
+    const idRefProf = obtenerIdReferencia(srv.profesional);
+    const idRefUsr = obtenerIdReferencia(srv.usuario);
+
+    let profObj =
       srv.profesional && typeof srv.profesional === "object"
         ? srv.profesional
-        : mapaProfesionales.get(obtenerIdProfesional(srv.profesional)) || {};
+        : mapaProfesionalesPorId.get(idRefProf) ||
+          mapaProfesionalesPorUsuario.get(idRefProf) ||
+          mapaProfesionalesPorUsuario.get(idRefUsr) ||
+          {};
+
+    if (!profObj._id && idRefProf && mapaProfesionalesPorId.has(idRefProf)) {
+      profObj = mapaProfesionalesPorId.get(idRefProf);
+    }
+
+    const idUsuarioDelProf = obtenerIdReferencia(profObj.usuario) || idRefUsr;
+    const nombreDesdeUsuarioObj =
+      typeof profObj.usuario === "object" && profObj.usuario !== null
+        ? profObj.usuario.nombre || profObj.usuario.name
+        : "";
+    const nombreDesdeSesion = obtenerNombreUsuarioSesionSiCoincide(idUsuarioDelProf);
+
+    const nombreProfesional =
+      nombreDesdeUsuarioObj ||
+      profObj.nombre ||
+      srv.nombreProfesional ||
+      nombreDesdeSesion ||
+      "Profesional";
 
     const disponibilidad = Array.isArray(profObj.disponibilidadSemanal)
       ? profObj.disponibilidadSemanal
       : profObj.disponibilidadSemanal
       ? [String(profObj.disponibilidadSemanal)]
+      : Array.isArray(srv.disponibilidadSemanal)
+      ? srv.disponibilidadSemanal
       : [];
+
+    const zona = profObj.zona || srv.zona || "";
+    const foto = profObj.foto || profObj.fotoPerfil || profObj.imagen || srv.foto || "";
 
     return {
       id: srv._id || srv.id || "",
-      profesionalId: obtenerIdProfesional(srv.profesional) || profObj._id || "",
+      profesionalId: profObj._id || profObj.id || idRefProf || "",
       nombreServicio: srv.nombre || "Servicio sin nombre",
       descripcion: srv.descripcion || "",
       precio: Number(srv.precio ?? 0),
       categoria: srv.categoria || "",
-      nombreProfesional: profObj.usuario?.nombre || profObj.nombre || "Profesional",
-      zona: profObj.zona || "",
+      nombreProfesional,
+      foto,
+      zona,
       disponibilidadSemanal: disponibilidad,
-      calificacionPromedio: Number(profObj.calificacionPromedio ?? 0),
+      calificacionPromedio: Number(profObj.calificacionPromedio ?? srv.calificacionPromedio ?? 0),
     };
   });
 
-  // Aplicar los filtros activos sobre el mismo conjunto
   return catalogo.filter((item) => {
     if (filtros.categoria && item.categoria.toLowerCase() !== filtros.categoria.toLowerCase()) {
       return false;
@@ -165,7 +217,7 @@ function combinarYFiltrarCatalogo(servicios, profesionales, filtros) {
     return true;
   });
 }
-/*hidratacion de las tarjetas */
+
 function escaparHTML(texto) {
   return String(texto ?? "")
     .replaceAll("&", "&amp;")
@@ -181,8 +233,24 @@ function crearTarjetaHtml(item) {
       ? item.disponibilidadSemanal.map(escaparHTML).join(" · ")
       : "Consultar disponibilidad";
 
-  // Promedio de estrellas: se actualiza cuando Ludmi registra una nueva reseña (POST /api/resenas)
   const promedioSeguro = Number(item.calificacionPromedio ?? 0).toFixed(1);
+  const fotoUrl = item.foto ? escaparHTML(item.foto) : "";
+  const inicialProfesional = escaparHTML((item.nombreProfesional || "P").charAt(0).toUpperCase());
+
+  const avatarHtml = fotoUrl
+    ? `<img
+         src="${fotoUrl}"
+         alt="Foto de ${escaparHTML(item.nombreProfesional)}"
+         class="rounded-circle object-fit-cover flex-shrink-0 border"
+         style="width: 38px; height: 38px;"
+         onerror="this.style.display='none'"
+       />`
+    : `<span
+         class="d-inline-flex align-items-center justify-content-center rounded-circle bg-light text-secondary fw-bold flex-shrink-0 border"
+         style="width: 38px; height: 38px; font-size: 0.95rem;"
+       >
+         ${inicialProfesional}
+       </span>`;
 
   return `
     <div class="col">
@@ -192,17 +260,19 @@ function crearTarjetaHtml(item) {
             <span class="badge badge-categoria rounded-pill px-3 py-2">
               ${escaparHTML(item.categoria || "Servicio")}
             </span>
-            <!-- Insignia de calificación promedio del oferente (vinculada a las reseñas de Ludmi) -->
             <span class="badge badge-rating rounded-pill px-3 py-2">
               ★ ${escaparHTML(promedioSeguro)}
             </span>
           </div>
 
-          <h3 class="font-brand h5 mb-1">${escaparHTML(item.nombreServicio)}</h3>
-          <p class="text-muted small mb-2">
-            Por <strong>${escaparHTML(item.nombreProfesional)}</strong>
-            ${item.zona ? `· ${escaparHTML(item.zona)}` : ""}
-          </p>
+          <h3 class="font-brand h5 mb-2">${escaparHTML(item.nombreServicio)}</h3>
+          <div class="d-flex align-items-center gap-2 mb-2">
+            ${avatarHtml}
+            <p class="text-muted small mb-0">
+              Por <strong>${escaparHTML(item.nombreProfesional)}</strong>
+              ${item.zona ? `· ${escaparHTML(item.zona)}` : ""}
+            </p>
+          </div>
 
           <p class="card-text small flex-grow-1 mb-3">
             ${escaparHTML(item.descripcion)}
@@ -217,7 +287,6 @@ function crearTarjetaHtml(item) {
           <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 pt-2 border-top">
             <span class="price-tag fs-5">$${escaparHTML(Number(item.precio ?? 0).toLocaleString("es-AR"))}</span>
             <div class="d-flex flex-wrap gap-2">
-              <!-- Botón para ver reseñas: dispara evento para el módulo de reseñas de Ludmi (GET /api/resenas/profesional/:id) -->
               <button
                 type="button"
                 class="btn btn-sm btn-pet-outline btn-ver-resenas"
@@ -226,12 +295,13 @@ function crearTarjetaHtml(item) {
               >
                 Ver reseñas
               </button>
-              <!-- Botón para solicitar servicio: dispara evento para el flujo de solicitudes de Alex -->
               <button
                 type="button"
                 class="btn btn-sm btn-pet-primary btn-solicitar-servicio"
                 data-servicio-id="${escaparHTML(item.id)}"
                 data-profesional-id="${escaparHTML(item.profesionalId)}"
+                data-servicio-nombre="${escaparHTML(item.nombreServicio)}"
+                data-nombre-profesional="${escaparHTML(item.nombreProfesional)}"
               >
                 Solicitar servicio
               </button>
@@ -243,10 +313,7 @@ function crearTarjetaHtml(item) {
   `;
 }
 
-// Delegación única de eventos en la grilla: resuelve tanto el hook de reseñas (Ludmi) como el de solicitudes (Alex)
-grillaResultados.addEventListener("click", (event) => {
-  // Parte Ludmi: si el cliente hace clic en "Ver reseñas", se emite "huellitas:ver-resenas"
-  // con profesionalId y nombreProfesional para que js/resenas-stats.js cargue o muestre las reseñas
+grillaResultados?.addEventListener("click", (event) => {
   const btnResenas = event.target.closest(".btn-ver-resenas");
   if (btnResenas) {
     document.dispatchEvent(
@@ -260,7 +327,6 @@ grillaResultados.addEventListener("click", (event) => {
     return;
   }
 
-  // Parte Alex: si el cliente hace clic en "Solicitar servicio", emitimos "huellitas:solicitar-servicio"
   const btnSolicitar = event.target.closest(".btn-solicitar-servicio");
   if (btnSolicitar) {
     document.dispatchEvent(
@@ -268,6 +334,8 @@ grillaResultados.addEventListener("click", (event) => {
         detail: {
           servicioId: btnSolicitar.dataset.servicioId,
           profesionalId: btnSolicitar.dataset.profesionalId,
+          servicioNombre: btnSolicitar.dataset.servicioNombre,
+          profesionalNombre: btnSolicitar.dataset.nombreProfesional,
         },
       })
     );
@@ -275,6 +343,7 @@ grillaResultados.addEventListener("click", (event) => {
 });
 
 function renderizarResultados(items) {
+  if (!grillaResultados || !contadorResultados) return;
   grillaResultados.innerHTML = "";
 
   if (!items || items.length === 0) {
@@ -292,7 +361,6 @@ function renderizarResultados(items) {
   grillaResultados.innerHTML = items.map(crearTarjetaHtml).join("");
 }
 
-// Función principal que coordina: estado cargando -> fetch -> filtrar -> renderizar
 async function cargarCatalogo() {
   mostrarEstado({ cargando: true });
 
@@ -308,28 +376,28 @@ async function cargarCatalogo() {
     renderizarResultados(resultadosFiltrados);
   } catch (error) {
     console.error("Error al cargar el catálogo:", error);
-    contadorResultados.textContent = "Error al cargar el catálogo";
+    if (contadorResultados) {
+      contadorResultados.textContent = "Error al cargar el catálogo";
+    }
     mostrarEstado({ error: true });
   }
 }
 
-// Limpiar todos los campos del formulario y volver a cargar
 function limpiarFiltros() {
-  filtrosForm.reset();
+  filtrosForm?.reset();
   cargarCatalogo();
 }
 
-// Evento: enviar formulario de filtros
-filtrosForm.addEventListener("submit", (event) => {
-  event.preventDefault(); // Evita que la página se recargue sola como hace un form clásico
+filtrosForm?.addEventListener("submit", (event) => {
+  event.preventDefault();
   cargarCatalogo();
 });
 
-// Eventos: botones para limpiar filtros
-btnLimpiarFiltros.addEventListener("click", limpiarFiltros);
-btnLimpiarDesdeVacio.addEventListener("click", limpiarFiltros);
+btnLimpiarFiltros?.addEventListener("click", limpiarFiltros);
+btnLimpiarDesdeVacio?.addEventListener("click", limpiarFiltros);
 
-// Carga inicial cuando el DOM está listo
-document.addEventListener("DOMContentLoaded", () => {
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", cargarCatalogo);
+} else {
   cargarCatalogo();
-});
+}

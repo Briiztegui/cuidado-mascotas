@@ -5,7 +5,8 @@ const profesionalSchema = new mongoose.Schema({
   zona: { type: String, required: true },
   contacto: { type: String, required: true },
   disponibilidadSemanal: [String],
+  foto: { type: String, default: "" },
   calificacionPromedio: { type: Number, default: 0 }
 });
 
-export default mongoose.model("Oferente", profesionalSchema);
+export default mongoose.models.Profesional || mongoose.model("Profesional", profesionalSchema, "oferentes");
